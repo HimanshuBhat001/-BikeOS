@@ -22,3 +22,10 @@ async function loadWeather(){if(!state.position)return;try{$('weatherState').tex
 if('getBattery'in navigator){navigator.getBattery().then(b=>{const update=()=>{$('battery').textContent=Math.round(b.level*100)+'%';$('batteryState').textContent=b.charging?'CHARGING':'BATTERY';};update();b.addEventListener('levelchange',update);b.addEventListener('chargingchange',update);}).catch(()=>{});}
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 startGPS();renderHistory();setInterval(()=>{if(state.position)loadWeather();},15*60*1000);setTimeout(loadWeather,5000);
+/* iPhone-friendly SOS: all calls/messages require explicit user confirmation in iOS. */
+const emergencyInput=$('emergencyContact');
+const savedEmergency=localStorage.getItem('bikeos-emergency-contact')||'';
+if(emergencyInput)emergencyInput.value=savedEmergency;
+$('saveEmergency').addEventListener('click',()=>{const n=emergencyInput.value.trim();if(!/^[+0-9 ()-]{7,20}$/.test(n)){$('sosStatus').textContent='Enter a valid emergency contact number.';return;}localStorage.setItem('bikeos-emergency-contact',n);$('sosStatus').textContent='Emergency contact saved on this iPhone.';});
+$('call112').addEventListener('click',()=>{location.href='tel:112';});
+$('shareSOS').addEventListener('click',()=>{const n=localStorage.getItem('bikeos-emergency-contact');if(!n){$('sosStatus').textContent='Save an emergency contact number first.';emergencyInput.focus();return;}const send=()=>{if(!lastPosition){$('sosStatus').textContent='GPS fix unavailable. Enable location and try again.';return;}const c=lastPosition.coords;const map='https://maps.google.com/?q='+c.latitude+','+c.longitude;const body='EMERGENCY: I may need assistance. My current location: '+map+' (GPS accuracy approx. '+Math.round(c.accuracy)+' m).';location.href='sms:'+encodeURIComponent(n)+'?&body='+encodeURIComponent(body);};if(lastPosition)send();else{startGPS();$('sosStatus').textContent='Waiting for GPS location. Tap Share my location again when GPS is locked.';}});
