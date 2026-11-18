@@ -2,7 +2,7 @@ package com.bikeos.jarvis
 
 import android.Manifest
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.*
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.*
