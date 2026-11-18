@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090b"><meta name="description" content="BikeOS JARVIS cockpit for TVS Ronin Nimbus Grey SE">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg">
-<link rel="stylesheet" href="./css/style.css?v=jarvis-redline-final">
+<link rel="stylesheet" href="./css/style.css?v=jarvis-redline-live-2">
 <title>BikeOS JARVIS | TVS Ronin</title>
 </head>
 <body>
@@ -32,8 +32,8 @@
   <section class="gauge-wrap">
    <div class="gauge">
     <div class="gauge-ticks" aria-hidden="true"></div>
-    <div class="gauge-inner"><div class="rpm-label">RPM ×1000</div><div class="speed" id="speed">0</div><div class="unit">km/h</div>
-     <div class="gear-plate"><strong id="gearValue">--</strong><small>GEAR</small></div>
+    <div class="gauge-inner"><div class="rpm-label">LIVE GPS SPEED</div><div class="speed" id="speed">0</div><div class="unit">km/h</div>
+
     </div>
    </div>
    <div class="mode-switch"><span>RIDE MODE</span><div class="mode-buttons"><button id="urbanMode" class="mode active">URBAN</button><button id="rainMode" class="mode">RAIN</button></div></div>
@@ -54,10 +54,10 @@
  </section>
 
  <section class="metrics">
-  <article class="metric panel"><div class="metric-icon">▣</div><div><small>FUEL</small><b id="fuelValue">--%</b><div class="bar"><i id="fuelBar"></i></div></div></article>
-  <article class="metric panel"><div class="metric-icon">╱╲</div><div><small>RANGE</small><b><span id="rangeValue">--</span><em> km</em></b></div></article>
-  <article class="metric panel"><div class="metric-icon">●</div><div><small>TRIP A</small><b><span id="tripValue">0.0</span><em> km</em></b></div></article>
-  <article class="metric panel"><div class="metric-icon">◉</div><div><small>ODO</small><b><span id="odoValue">--</span><em> km</em></b></div></article>
+  <article class="metric panel"><div class="metric-icon">●</div><div><small>TRIP DISTANCE</small><b><span id="tripValue">0.0</span><em> km</em></b></div></article>
+  <article class="metric panel"><div class="metric-icon">⌁</div><div><small>AVG SPEED</small><b id="avgSpeedValue">0</b><em> km/h</em></div></article>
+  <article class="metric panel"><div class="metric-icon">↗</div><div><small>MAX SPEED</small><b id="maxSpeedValue">0</b><em> km/h</em></div></article>
+  <article class="metric panel"><div class="metric-icon">◷</div><div><small>RIDE TIME</small><b id="rideTimeValue">00:00</b></div></article>
  </section>
 </main>
 
@@ -71,7 +71,7 @@
 
 <section id="view-stats" class="view panel subview"><div class="subhead"><span>▥</span><div><h2>Ride Stats</h2><p>GPS ride telemetry saved on this device</p></div></div><div class="stats-grid"><div><small>TRIP DISTANCE</small><b id="statDistance">0.00 km</b></div><div><small>AVG SPEED</small><b id="statAvg">0 km/h</b></div><div><small>MAX SPEED</small><b id="statMax">0 km/h</b></div><div><small>RIDE TIME</small><b id="statTime">00:00</b></div></div><div class="ride-controls"><button class="red-button" id="startRide">START RIDE</button><button id="endRide">END RIDE</button><button id="resetTrip">RESET TRIP A</button></div><div id="historyList" class="history-list">No rides recorded yet.</div></section>
 
-<section id="view-settings" class="view panel subview"><div class="subhead"><span>⚙</span><div><h2>Settings</h2><p>Bike profile and display preferences</p></div></div><div class="settings-grid"><label>Fuel level (%)<input id="settingFuel" type="number" min="0" max="100" placeholder="Set manually"></label><label>Estimated range (km)<input id="settingRange" type="number" min="0" placeholder="Set manually"></label><label>Odometer (km)<input id="settingOdo" type="number" min="0" placeholder="Set manually"></label><label>Helmet status<select id="settingHelmet"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label><label>GoPro status<select id="settingGopro"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label></div><button class="red-button" id="saveBikeSettings">SAVE BIKE PROFILE</button><p class="note">Fuel, range, odometer, helmet and GoPro values are manual display settings unless a supported vehicle/accessory integration is added. Urban and Rain are BikeOS profiles, not TVS ECU modes.</p><div class="settings-links"><button id="bluetoothHelp">BLUETOOTH SETUP</button><button id="gpsRefresh">REFRESH GPS</button></div><div id="settingsStatus" class="note"></div></section>
+<section id="view-settings" class="view panel subview"><div class="subhead"><span>⚙</span><div><h2>Settings</h2><p>Bike profile and display preferences</p></div></div><div class="settings-grid"><label>Helmet status<select id="settingHelmet"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label><label>GoPro status<select id="settingGopro"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label></div><button class="red-button" id="saveBikeSettings">SAVE BIKE PROFILE</button><p class="note">Helmet and GoPro status are user-configured accessory indicators. Urban and Rain are BikeOS display profiles and do not change motorcycle behaviour.</p><div class="settings-links"><button id="bluetoothHelp">BLUETOOTH SETUP</button><button id="gpsRefresh">REFRESH GPS</button></div><div id="settingsStatus" class="note"></div></section>
 
 <nav class="bottom-nav">
  <button class="nav-item active" data-tab="dashboard"><span>◉</span><b>Dashboard</b></button>
