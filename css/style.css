@@ -23,3 +23,14 @@ button,.mode{background:#151a20;color:#f4f5f7;border-color:#454d57}
 .nav-item.active{border-color:#a91b27;background:radial-gradient(ellipse at center,#3a080e,#100609 75%);box-shadow:0 0 18px #f21a2a35}
 .metric-icon{background:#200a0e!important}
 .sos-panel{border-color:#8e1d2a!important;background:linear-gradient(145deg,#1d0d12,#09090c)!important}
+
+/* Clean minimal speedometer: no tick marks or segmented line clutter */
+.gauge{
+ background:conic-gradient(from 225deg,#e31b2f 0deg 105deg,#353a40 105deg 270deg,transparent 270deg 360deg)!important;
+ box-shadow:0 0 0 8px #08090b,0 0 0 10px #343941,0 0 28px #000,inset 0 0 22px #ffffff08!important;
+}
+.gauge:before{display:none!important}
+.gauge:after{inset:25px;border:1px solid #343941;box-shadow:none!important}
+.gauge-ticks{display:none!important}
+.gauge-inner{width:82%!important;height:82%!important;background:radial-gradient(circle,#101216 0,#08090b 75%)!important;border:0!important}
+.speed{text-shadow:none!important}
