@@ -5,8 +5,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#061018",
-  "theme_color": "#071018",
+  "background_color": "#111315",
+  "theme_color": "#111315",
   "description": "JARVIS-style motorcycle ride dashboard for TVS Ronin",
   "icons": [{"src":"./assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }
