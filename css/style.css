@@ -63,3 +63,8 @@ button,.mode{background:#151a20;color:#f4f5f7;border-color:#454d57}
   border: 0 !important;
   background: radial-gradient(circle, #111419 0%, #08090b 78%) !important;
 }
+
+/* Dynamic speed arc is driven by live GPS speed in app.js */
+.gauge{background:conic-gradient(from 225deg,#e31b2f 0deg 0deg,#343941 0deg 270deg,transparent 270deg 360deg)!important}
+.gauge:before{display:none!important;content:none!important}
+.gauge:after{inset:15px!important;border:1px solid #343941!important;box-shadow:none!important;background:transparent!important}
