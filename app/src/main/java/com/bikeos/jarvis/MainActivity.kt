@@ -3,6 +3,8 @@ package com.bikeos.jarvis
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -35,6 +37,15 @@ class MainActivity : Activity() {
         webView.settings.allowContentAccess = false
         val assetLoader = WebViewAssetLoader.Builder().addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this)).build()
         webView.webViewClient = object : WebViewClientCompat() {
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                val uri = request.url
+                if (uri.scheme == "https" && uri.host == "appassets.androidplatform.net") return false
+                if (uri.scheme == "http" && uri.host == "appassets.androidplatform.net") return false
+                return try {
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    true
+                } catch (_: Exception) { true }
+            }
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest) = assetLoader.shouldInterceptRequest(request.url)
         }
         webView.webChromeClient = object : WebChromeClient() {
