@@ -1,50 +1,88 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111315">
-  <meta name="description" content="JARVIS-style motorcycle ride dashboard for TVS Ronin">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./css/style.css?v=nimbus-grey-3">
-  <title>BikeOS | JARVIS</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090b"><meta name="description" content="BikeOS JARVIS cockpit for TVS Ronin Nimbus Grey SE">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg">
+<link rel="stylesheet" href="./css/style.css?v=jarvis-redline-final">
+<title>BikeOS JARVIS | TVS Ronin</title>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <div><div class="eyebrow">TVS RONIN • SPECIAL EDITION</div><h1>BIKE<span>OS</span></h1></div>
-      <div class="status"><i id="gpsDot"></i><span id="gpsStatus">GPS STANDBY</span></div>
-    </header>
-    <section class="hero panel">
-      <div class="eyebrow">LIVE GROUND SPEED</div>
-      <div class="speedline"><strong id="speed">0</strong><span>km/h</span></div>
-      <div class="subline">GPS ACCURACY <b id="accuracy">--</b></div>
-      <div class="meter"><span id="speedMeter"></span></div>
-    </section>
-    <section class="grid">
-      <article class="panel metric"><span>TRIP DISTANCE</span><strong id="distance">0.00</strong><small>KM</small></article>
-      <article class="panel metric"><span>AVG SPEED</span><strong id="avgSpeed">0</strong><small>KM/H</small></article>
-      <article class="panel metric"><span>MAX SPEED</span><strong id="maxSpeed">0</strong><small>KM/H</small></article>
-      <article class="panel metric"><span>RIDE TIME</span><strong id="rideTime">00:00</strong><small>HH:MM</small></article>
-    </section>
-    <section class="panel controls">
-      <div class="sectionhead"><h2>RIDE CONTROL</h2><span id="rideState">READY</span></div>
-      <div class="buttons"><button id="startRide" class="primary">START RIDE</button><button id="endRide">END RIDE</button><button id="locate">LOCATE</button></div>
-      <p id="coordinates">Coordinates: waiting for GPS</p>
-    </section>
-    <section class="grid lower">
-      <article class="panel utility"><div class="sectionhead"><h2>ENVIRONMENT</h2><span id="weatherState">ONLINE</span></div><strong id="weather">--°</strong><p id="weatherInfo">Weather unavailable</p></article>
-      <article class="panel utility"><div class="sectionhead"><h2>POWER</h2><span id="batteryState">DEVICE</span></div><strong id="battery">--%</strong><p>Screen lock <span id="wakeState">inactive</span></p></article>
-    </section>
-    <section class="panel shortcuts">
-      <div class="sectionhead"><h2>QUICK LAUNCH</h2><span>PRE-RIDE</span></div>
-      <div class="buttons"><button id="maps">GOOGLE MAPS</button><button id="music">MUSIC</button><button id="wake">KEEP SCREEN ON</button><button id="voice">VOICE MODE</button></div>
-      <p id="message" aria-live="polite">Systems standing by.</p>
-    </section>
-    <section class="panel history"><div class="sectionhead"><h2>RIDE HISTORY</h2><button id="clearHistory" class="quiet">CLEAR</button></div><div id="historyList">No rides recorded yet.</div></section>
-    <footer>BIKEOS JARVIS <span>•</span> RIDE SMART. RIDE SAFE.</footer>
-  </main>
-  <script src="./js/app.js"></script>
-</body>
-</html>
+<div class="app">
+<header class="topbar">
+ <div class="brand"><div class="brand-icon">◉</div><div><div class="brand-name">BikeOS</div><div class="brand-sub">J A R V I S</div></div></div>
+ <div class="bike-title"><span class="mini-bike">⌁</span><div><b>TVS RONIN</b><small>Nimbus Grey SE</small></div></div>
+ <div class="quick-status"><span id="btStatus" class="status-icon blue">ᛒ</span><span id="phoneStatus" class="status-icon green">☎</span><span id="gpsStatusIcon" class="status-icon green">➤</span></div>
+ <div class="clock"><b id="clock">--:--</b><span id="date">---</span></div>
+ <button class="gear-btn" data-tab="settings" aria-label="Settings">⚙</button>
+</header>
+
+<main id="view-dashboard" class="view active">
+ <section class="cockpit">
+  <aside class="bike-card panel">
+   <div class="bike-visual"><div class="bike-silhouette">🏍</div></div>
+   <h2>TVS RONIN</h2><p class="muted">Nimbus Grey SE</p>
+   <div class="connected"><i></i><span id="bikeConnection">PHONE GPS READY</span></div>
+   <div class="device-row"><span>▣　Phone</span><b id="phoneBattery">--%</b></div>
+   <div class="device-row"><span>◉　Helmet</span><b id="helmetState">NOT LINKED</b></div>
+   <div class="device-row"><span>▣　GoPro</span><b id="goproState">NOT LINKED</b></div>
+   <p class="device-note">Accessory status is user-configured. BikeOS does not scan or pair devices by itself.</p>
+  </aside>
+
+  <section class="gauge-wrap">
+   <div class="gauge">
+    <div class="gauge-ticks" aria-hidden="true"></div>
+    <div class="gauge-inner"><div class="rpm-label">RPM ×1000</div><div class="speed" id="speed">0</div><div class="unit">km/h</div>
+     <div class="gear-plate"><strong id="gearValue">--</strong><small>GEAR</small></div>
+    </div>
+   </div>
+   <div class="mode-switch"><span>RIDE MODE</span><div class="mode-buttons"><button id="urbanMode" class="mode active">URBAN</button><button id="rainMode" class="mode">RAIN</button></div></div>
+   <div class="telemetry-note" id="telemetryNote">GPS SPEED • ENGINE DATA NOT CONNECTED</div>
+  </section>
+
+  <aside class="right-stack">
+   <section class="nav-card panel">
+    <div class="turn-row"><span class="turn-icon" id="turnIcon">➜</span><div><b id="navDistance">Navigation ready</b><small id="navInstruction">Choose a destination in Maps</small></div></div>
+    <div class="map-preview"><div class="map-grid"></div><svg viewBox="0 0 420 150" preserveAspectRatio="none"><path d="M30 125 L90 125 L140 78 L230 78 L280 30 L390 30" class="route-line"/><path d="M30 125 L90 125 L140 78 L230 78 L280 30 L390 30" class="route-glow"/><path d="M280 30 l-14 8 4 -17z" class="route-arrow"/></svg><span class="map-pin">➤</span></div>
+    <div class="nav-foot"><span id="eta">ETA --</span><span id="navRemaining">GPS NOT LOCKED</span><button id="openNavigation">OPEN MAPS ↗</button></div>
+   </section>
+   <section class="music-card panel">
+    <div class="album-art">♫</div><div class="track"><b id="trackTitle">Music controls</b><small id="trackArtist">Open your preferred music app</small></div><span class="spotify">●</span>
+    <div class="music-controls"><button id="prevTrack">|◀</button><button id="playMusic" class="play">▶</button><button id="nextTrack">▶|</button></div>
+   </section>
+  </aside>
+ </section>
+
+ <section class="metrics">
+  <article class="metric panel"><div class="metric-icon">▣</div><div><small>FUEL</small><b id="fuelValue">--%</b><div class="bar"><i id="fuelBar"></i></div></div></article>
+  <article class="metric panel"><div class="metric-icon">╱╲</div><div><small>RANGE</small><b><span id="rangeValue">--</span><em> km</em></b></div></article>
+  <article class="metric panel"><div class="metric-icon">●</div><div><small>TRIP A</small><b><span id="tripValue">0.0</span><em> km</em></b></div></article>
+  <article class="metric panel"><div class="metric-icon">◉</div><div><small>ODO</small><b><span id="odoValue">--</span><em> km</em></b></div></article>
+ </section>
+</main>
+
+<section id="view-navigation" class="view panel subview"><div class="subhead"><span>➤</span><div><h2>Navigation</h2><p>Route guidance through your installed maps app</p></div></div><label>Destination<input id="destination" placeholder="Enter a place or address"></label><button class="red-button" id="destinationGo">NAVIGATE</button><p class="note">Turn-by-turn instructions are provided by Google Maps or your chosen navigation app. BikeOS does not read live Maps guidance in this version.</p><div class="location-box" id="locationDetails">Waiting for GPS location…</div></section>
+
+<section id="view-music" class="view panel subview"><div class="subhead"><span>♫</span><div><h2>Music</h2><p>Launch and control your music app</p></div></div><div class="app-links"><button data-music="spotify">Spotify</button><button data-music="youtube">YouTube Music</button><button data-music="apple">Apple Music</button></div><p class="note">Playback buttons open your selected music app. Direct playback control depends on Android media-session permissions and the music app.</p></section>
+
+<section id="view-calls" class="view panel subview"><div class="subhead"><span>☎</span><div><h2>Calls</h2><p>Phone connectivity and call shortcuts</p></div></div><div class="call-state" id="callState">No call information available</div><button class="red-button" id="openPhone">OPEN PHONE APP</button><p class="note">Your iPhone is the call phone. Caller ID on this Samsung requires a separate iPhone-to-Android Bluetooth notification bridge. This dashboard does not claim that bridge is active.</p></section>
+
+<section id="view-messages" class="view panel subview"><div class="subhead"><span>▤</span><div><h2>Messages</h2><p>Message shortcut and emergency contact</p></div></div><button class="red-button" id="openMessages">OPEN MESSAGES</button><label>Emergency contact<input id="emergencyContact" inputmode="tel" placeholder="+91…"></label><button id="saveEmergency">SAVE CONTACT</button><p class="note">SOS opens the phone's dialler for 112 or prepares a location-sharing message. It does not silently send messages or call emergency services.</p><div class="sos-actions"><button class="sos-call" id="call112">CALL 112</button><button id="shareSOS">SHARE LOCATION</button></div><p id="sosStatus" class="note" aria-live="polite"></p></section>
+
+<section id="view-stats" class="view panel subview"><div class="subhead"><span>▥</span><div><h2>Ride Stats</h2><p>GPS ride telemetry saved on this device</p></div></div><div class="stats-grid"><div><small>TRIP DISTANCE</small><b id="statDistance">0.00 km</b></div><div><small>AVG SPEED</small><b id="statAvg">0 km/h</b></div><div><small>MAX SPEED</small><b id="statMax">0 km/h</b></div><div><small>RIDE TIME</small><b id="statTime">00:00</b></div></div><div class="ride-controls"><button class="red-button" id="startRide">START RIDE</button><button id="endRide">END RIDE</button><button id="resetTrip">RESET TRIP A</button></div><div id="historyList" class="history-list">No rides recorded yet.</div></section>
+
+<section id="view-settings" class="view panel subview"><div class="subhead"><span>⚙</span><div><h2>Settings</h2><p>Bike profile and display preferences</p></div></div><div class="settings-grid"><label>Fuel level (%)<input id="settingFuel" type="number" min="0" max="100" placeholder="Set manually"></label><label>Estimated range (km)<input id="settingRange" type="number" min="0" placeholder="Set manually"></label><label>Odometer (km)<input id="settingOdo" type="number" min="0" placeholder="Set manually"></label><label>Helmet status<select id="settingHelmet"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label><label>GoPro status<select id="settingGopro"><option value="NOT LINKED">Not linked</option><option value="CONNECTED">Connected</option></select></label></div><button class="red-button" id="saveBikeSettings">SAVE BIKE PROFILE</button><p class="note">Fuel, range, odometer, helmet and GoPro values are manual display settings unless a supported vehicle/accessory integration is added. Urban and Rain are BikeOS profiles, not TVS ECU modes.</p><div class="settings-links"><button id="bluetoothHelp">BLUETOOTH SETUP</button><button id="gpsRefresh">REFRESH GPS</button></div><div id="settingsStatus" class="note"></div></section>
+
+<nav class="bottom-nav">
+ <button class="nav-item active" data-tab="dashboard"><span>◉</span><b>Dashboard</b></button>
+ <button class="nav-item" data-tab="navigation"><span>➤</span><b>Navigation</b></button>
+ <button class="nav-item" data-tab="music"><span>♫</span><b>Music</b></button>
+ <button class="nav-item" data-tab="calls"><span>☎</span><b>Calls</b></button>
+ <button class="nav-item" data-tab="messages"><span>▤</span><b>Messages</b></button>
+ <button class="nav-item" data-tab="stats"><span>▥</span><b>Ride Stats</b></button>
+ <button class="nav-item" data-tab="settings"><span>⚙</span><b>Settings</b></button>
+</nav>
+<div id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="./js/app.js"></script>
+</body></html>
