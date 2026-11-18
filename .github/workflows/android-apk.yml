@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'app/**'
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
       - 'build.gradle'
       - 'settings.gradle'
       - 'gradle.properties'
