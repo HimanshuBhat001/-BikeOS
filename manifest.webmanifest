@@ -1,0 +1,12 @@
+{
+  "name": "BikeOS JARVIS Motorcycle Dashboard",
+  "short_name": "BikeOS",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#061018",
+  "theme_color": "#071018",
+  "description": "JARVIS-style motorcycle ride dashboard for TVS Ronin",
+  "icons": [{"src":"./assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
