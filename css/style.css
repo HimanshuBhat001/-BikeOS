@@ -34,3 +34,32 @@ button,.mode{background:#151a20;color:#f4f5f7;border-color:#454d57}
 .gauge-ticks{display:none!important}
 .gauge-inner{width:82%!important;height:82%!important;background:radial-gradient(circle,#101216 0,#08090b 75%)!important;border:0!important}
 .speed{text-shadow:none!important}
+
+/* FINAL OVERRIDE: smooth speedometer, absolutely no radial tick marks */
+.gauge,
+.gauge::before,
+.gauge::after {
+  background-image: none !important;
+}
+.gauge {
+  background: conic-gradient(from 225deg, #e31b2f 0deg 210deg, #343941 210deg 270deg, transparent 270deg 360deg) !important;
+  border: 0 !important;
+  box-shadow: 0 0 0 8px #08090b, 0 0 0 10px #343941, 0 0 28px #000 !important;
+}
+.gauge::before { content: none !important; display: none !important; }
+.gauge::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 15px !important;
+  border: 1px solid #343941 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.gauge-inner {
+  width: 82% !important;
+  height: 82% !important;
+  border: 0 !important;
+  background: radial-gradient(circle, #111419 0%, #08090b 78%) !important;
+}
