@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071018">
+  <meta name="description" content="JARVIS-style motorcycle ride dashboard for TVS Ronin">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./css/style.css">
+  <title>BikeOS | JARVIS</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><div class="eyebrow">TVS RONIN • SPECIAL EDITION</div><h1>BIKE<span>OS</span></h1></div>
+      <div class="status"><i id="gpsDot"></i><span id="gpsStatus">GPS STANDBY</span></div>
+    </header>
+    <section class="hero panel">
+      <div class="eyebrow">LIVE GROUND SPEED</div>
+      <div class="speedline"><strong id="speed">0</strong><span>km/h</span></div>
+      <div class="subline">GPS ACCURACY <b id="accuracy">--</b></div>
+      <div class="meter"><span id="speedMeter"></span></div>
+    </section>
+    <section class="grid">
+      <article class="panel metric"><span>TRIP DISTANCE</span><strong id="distance">0.00</strong><small>KM</small></article>
+      <article class="panel metric"><span>AVG SPEED</span><strong id="avgSpeed">0</strong><small>KM/H</small></article>
+      <article class="panel metric"><span>MAX SPEED</span><strong id="maxSpeed">0</strong><small>KM/H</small></article>
+      <article class="panel metric"><span>RIDE TIME</span><strong id="rideTime">00:00</strong><small>HH:MM</small></article>
+    </section>
+    <section class="panel controls">
+      <div class="sectionhead"><h2>RIDE CONTROL</h2><span id="rideState">READY</span></div>
+      <div class="buttons"><button id="startRide" class="primary">START RIDE</button><button id="endRide">END RIDE</button><button id="locate">LOCATE</button></div>
+      <p id="coordinates">Coordinates: waiting for GPS</p>
+    </section>
+    <section class="grid lower">
+      <article class="panel utility"><div class="sectionhead"><h2>ENVIRONMENT</h2><span id="weatherState">ONLINE</span></div><strong id="weather">--°</strong><p id="weatherInfo">Weather unavailable</p></article>
+      <article class="panel utility"><div class="sectionhead"><h2>POWER</h2><span id="batteryState">DEVICE</span></div><strong id="battery">--%</strong><p>Screen lock <span id="wakeState">inactive</span></p></article>
+    </section>
+    <section class="panel shortcuts">
+      <div class="sectionhead"><h2>QUICK LAUNCH</h2><span>PRE-RIDE</span></div>
+      <div class="buttons"><button id="maps">GOOGLE MAPS</button><button id="music">MUSIC</button><button id="wake">KEEP SCREEN ON</button><button id="voice">VOICE MODE</button></div>
+      <p id="message" aria-live="polite">Systems standing by.</p>
+    </section>
+    <section class="panel history"><div class="sectionhead"><h2>RIDE HISTORY</h2><button id="clearHistory" class="quiet">CLEAR</button></div><div id="historyList">No rides recorded yet.</div></section>
+    <footer>BIKEOS JARVIS <span>•</span> RIDE SMART. RIDE SAFE.</footer>
+  </main>
+  <script src="./js/app.js"></script>
+</body>
+</html>
