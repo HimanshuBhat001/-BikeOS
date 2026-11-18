@@ -1,4 +1,4 @@
-const CACHE='bikeos-redline-v3';
+const CACHE='bikeos-clean-speedometer-v4';
 const CORE=['./','./index.html','./css/style.css','./js/app.js','./manifest.webmanifest','./assets/icon.svg'];
 const NETWORK_FIRST=['./','./index.html','./css/style.css','./js/app.js','./manifest.webmanifest'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)))});
