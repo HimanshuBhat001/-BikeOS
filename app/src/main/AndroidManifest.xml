@@ -9,7 +9,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="BikeOS JARVIS Diagnostic"
+        android:label="BikeOS JARVIS v2.0"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false">
         <activity
