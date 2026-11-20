@@ -37,7 +37,7 @@ function updateUserMarker(c){
  const ll=[c.longitude,c.latitude];
  if(!nav.userMarker){const el=document.createElement('div');el.className='user-map-marker';nav.userMarker=new maplibregl.Marker({element:el}).setLngLat(ll).addTo(nav.map)}
  else nav.userMarker.setLngLat(ll);
- if(nav.active)advanceGuidance(ll);
+ if(nav.active){advanceGuidance(ll);nav.map.easeTo({center:ll,duration:450,essential:true})}
 }
 function drawRoute(){
  if(!nav.map||!nav.ready||!nav.route)return;
@@ -94,7 +94,7 @@ function advanceGuidance(ll){
  safe('navInstruction',e=>e.textContent=instructionText(step));safe('navDistance',e=>e.textContent=remaining>1000?(remaining/1000).toFixed(1)+' km':'In '+Math.max(0,Math.round(remaining))+' m');
  safe('turnIcon',e=>e.textContent=(step.maneuver.modifier||'straight').includes('left')?'↰':(step.maneuver.modifier||'').includes('right')?'↱':'↑');
  document.querySelectorAll('#routeSteps li').forEach((li,i)=>li.classList.toggle('current',i===nav.lastStep));
- const left=nav.steps.slice(nav.lastStep).reduce((sum,x)=>sum+x.distance,0);safe('navRemaining',e=>e.textContent=(left/1000).toFixed(1)+' km');
+ const remainingSteps=nav.steps.slice(nav.lastStep);const left=remainingSteps.reduce((sum,x)=>sum+x.distance,0);const seconds=remainingSteps.reduce((sum,x)=>sum+x.duration,0);safe('navRemaining',e=>e.textContent=(left/1000).toFixed(1)+' km');safe('eta',e=>e.textContent=new Date(Date.now()+seconds*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
 }
 function startGuidance(){if(!nav.route){navToast('Calculate a route first');return}if(!s.pos){navToast('GPS location is required');return}nav.active=true;nav.lastStep=0;advanceGuidance([s.pos.coords.longitude,s.pos.coords.latitude]);safe('startNavigation',e=>{e.textContent='NAVIGATING';e.disabled=true});navToast('Navigation started. Keep your attention on the road.')}
 function stopGuidance(){nav.active=false;safe('startNavigation',e=>{e.textContent='START ROUTE';e.disabled=false});navToast('Navigation ended')}
