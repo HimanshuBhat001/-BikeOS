@@ -71,7 +71,7 @@ function drawRoute(){
 }
 async function searchDestination(source='navigation'){
  const home=source==='home';const input=$(home?'homeDestination':'destination');const q=input?.value.trim();if(!q){navToast('Enter a destination first');return}
- const btn=$('destinationGo');if(btn){btn.disabled=true;btn.textContent='SEARCHING'}
+ const btn=$(home?'homeDestinationGo':'destinationGo');if(btn){btn.disabled=true;btn.textContent='SEARCHING'}
  try{
   const box=$(home?'homePlaceResults':'placeResults');box.hidden=false;box.textContent='Searching places…';
   let places=[];
@@ -133,9 +133,9 @@ bind('destinationGo',searchDestination);bind('startNavigation',startGuidance);bi
 ['destination','homeDestination'].forEach(id=>safe(id,e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')searchDestination(id==='homeDestination'?'home':'navigation')})));bind('homeDestinationGo',()=>searchDestination('home'));
 
 bind('openPhone',()=>openUrl('tel:'));bind('openMessages',()=>openUrl('sms:'));
-const music={spotify:'https://open.spotify.com',youtube:'https://music.youtube.com',apple:'https://music.apple.com'};
-document.querySelectorAll('[data-music]').forEach(b=>b.addEventListener('click',()=>openUrl(music[b.dataset.music]||music.spotify)));
-bind('playMusic',()=>openUrl('https://music.youtube.com'));bind('prevTrack',()=>toast('Use previous track in your music app'));bind('nextTrack',()=>toast('Use next track in your music app'));
+function launchYouTubeMusic(){if(window.BikeOSNative&&window.BikeOSNative.openYouTubeMusic){window.BikeOSNative.openYouTubeMusic();return}openUrl('https://music.youtube.com')}
+bind('openYouTubeMusic',launchYouTubeMusic);
+bind('playMusic',launchYouTubeMusic);bind('prevTrack',()=>toast('Use previous track in your music app'));bind('nextTrack',()=>toast('Use next track in your music app'));
 bind('startRide',startRide);bind('endRide',endRide);
 bind('resetTrip',()=>{if(s.riding){toast('End the ride before resetting');return}s.dist=0;s.max=0;s.samples=[];s.elapsed=0;s.last=null;stats();toast('Trip A reset')});
 bind('saveEmergency',()=>{const n=$('emergencyContact')?.value.trim()||'';if(!/^[+0-9 ()-]{7,20}$/.test(n)){safe('sosStatus',e=>e.textContent='Enter a valid phone number.');return}store.set('emergency',n);safe('sosStatus',e=>e.textContent='Emergency contact saved on this device.');toast('Emergency contact saved')});
