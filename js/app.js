@@ -58,13 +58,14 @@ function updateUserMarker(c){
  if(nav.active){advanceGuidance(ll);nav.map.easeTo({center:ll,duration:450,essential:true})}
 }
 function drawRoute(){
- if(!nav.map||!nav.ready||!nav.route)return;
+ if(!nav.route)return;
  const data={type:'Feature',properties:{},geometry:nav.route.geometry};
  if(nav.homeMap&&nav.homeReady){
   if(nav.homeMap.getSource('home-route'))nav.homeMap.getSource('home-route').setData(data);
   else{nav.homeMap.addSource('home-route',{type:'geojson',data});nav.homeMap.addLayer({id:'home-route-line',type:'line',source:'home-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ed2638','line-width':5}})}
   const hc=nav.route.geometry.coordinates;nav.homeMap.fitBounds(hc.reduce((b,p)=>b.extend(p),new maplibregl.LngLatBounds(hc[0],hc[0])),{padding:20,duration:350});
  }
+ if(!nav.map||!nav.ready)return;
  if(nav.map.getSource('bikeos-route'))nav.map.getSource('bikeos-route').setData(data);
  else{nav.map.addSource('bikeos-route',{type:'geojson',data});nav.map.addLayer({id:'bikeos-route-casing',type:'line',source:'bikeos-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#08090b','line-width':11,'line-opacity':.85}});nav.map.addLayer({id:'bikeos-route-line',type:'line',source:'bikeos-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#f21d32','line-width':6}})}
  const coords=nav.route.geometry.coordinates;nav.map.fitBounds(coords.reduce((b,p)=>b.extend(p),new maplibregl.LngLatBounds(coords[0],coords[0])),{padding:{top:70,bottom:70,left:50,right:50},duration:700});
