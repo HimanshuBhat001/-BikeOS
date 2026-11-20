@@ -37,7 +37,7 @@ function syncHomeNavigation(){
  const remaining=$('navRemaining')?.textContent||'GPS WAITING';
  const eta=$('eta')?.textContent||'ETA --';
  homeText('homeNavInstruction',instruction);homeText('homeNavDistance',distance);
- homeText('homeNavRemaining',remaining);homeText('homeEta',eta);
+ homeText('homeNavRemaining',remaining);homeText('homeEta',eta);safe('homeStartNavigation',e=>{e.disabled=!nav.route||nav.active;e.textContent=nav.active?'NAVIGATING':'START ROUTE'});safe('homeEndNavigation',e=>e.disabled=!nav.active);
 }
 function initMap(){
  if(nav.map||!window.maplibregl||!$('bikeMap'))return;
@@ -78,13 +78,13 @@ async function searchDestination(source='navigation'){
   let places=[];
   const bias=s.pos?('&lat='+s.pos.coords.latitude+'&lon='+s.pos.coords.longitude):'&lat=18.5204&lon=73.8567';
   try{
-   const pr=await fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+bias+'&limit=8&lang=en');
+   const pr=await fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+bias+'&bbox=68.1,6.5,97.4,35.7&limit=8&lang=en');
    if(pr.ok){const pd=await pr.json();places=(pd.features||[]).map(f=>({display_name:[f.properties.name,f.properties.street,f.properties.city||f.properties.district,f.properties.state,f.properties.country].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(', '),lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0]})).filter(p=>p.display_name)}
   }catch(_){}
   if(!places.length){
    try{const nr=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&addressdetails=1&countrycodes=in&q='+encodeURIComponent(q),{headers:{Accept:'application/json'}});if(nr.ok)places=await nr.json()}catch(_){}
   }
-  if(!places.length){box.textContent='No results from either place-search service. Check internet access and try a fuller address or nearby landmark.';return}
+  if(!places.length){box.textContent='No matching places in India. Try a nearby landmark or a shorter search.';return}
   box.innerHTML='';places.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p.display_name;b.addEventListener('click',()=>{nav.destination={name:p.display_name,lat:Number(p.lat),lon:Number(p.lon)};if(input)input.value=p.display_name;const other=$(home?'destination':'homeDestination');if(other)other.value=p.display_name;box.hidden=true;buildRoute()});box.appendChild(b)});box.hidden=false;
  }catch(e){navToast(e.message+'; check your internet connection.')}finally{if(btn){btn.disabled=false;btn.textContent='GO'}}
 }
@@ -102,7 +102,7 @@ async function buildRoute(){
   nav.destMarker=new maplibregl.Marker({color:'#f21d32'}).setLngLat([nav.destination.lon,nav.destination.lat]).addTo(nav.map);
   drawRoute();renderSteps();safe('navRemaining',e=>e.textContent=(nav.route.distance/1000).toFixed(1)+' km');safe('eta',e=>e.textContent=new Date(Date.now()+nav.route.duration*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
   safe('navInstruction',e=>e.textContent='Route preview ready');safe('navDistance',e=>e.textContent=(nav.route.duration/60).toFixed(0)+' min • '+(nav.route.distance/1000).toFixed(1)+' km');syncHomeNavigation();
-  safe('startNavigation',e=>{e.disabled=false;e.textContent='START ROUTE'});navToast('Route ready. Start when safely stationary.');
+  safe('startNavigation',e=>{e.disabled=false;e.textContent='START ROUTE'});navToast('Route ready. Start when safely stationary.');syncHomeNavigation();
  }catch(e){navToast(e.message)}
 }
 function instructionText(step){
@@ -128,10 +128,30 @@ function advanceGuidance(ll){
  document.querySelectorAll('#routeSteps li').forEach((li,i)=>li.classList.toggle('current',i===nav.lastStep));
  const remainingSteps=nav.steps.slice(nav.lastStep);const left=remainingSteps.reduce((sum,x)=>sum+x.distance,0);const seconds=remainingSteps.reduce((sum,x)=>sum+x.duration,0);safe('navRemaining',e=>e.textContent=(left/1000).toFixed(1)+' km');safe('eta',e=>e.textContent=new Date(Date.now()+seconds*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));syncHomeNavigation();
 }
-function startGuidance(){if(!nav.route){navToast('Calculate a route first');return}if(!s.pos){navToast('GPS location is required');return}nav.active=true;nav.lastStep=0;advanceGuidance([s.pos.coords.longitude,s.pos.coords.latitude]);safe('startNavigation',e=>{e.textContent='NAVIGATING';e.disabled=true});navToast('Navigation started. Keep your attention on the road.')}
-function stopGuidance(){nav.active=false;safe('startNavigation',e=>{e.textContent='START ROUTE';e.disabled=false});navToast('Navigation ended')}
-bind('destinationGo',searchDestination);bind('startNavigation',startGuidance);bind('stopNavigation',stopGuidance);bind('centerMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});bind('recenterMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});
-['destination','homeDestination'].forEach(id=>safe(id,e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')searchDestination(id==='homeDestination'?'home':'navigation')})));bind('homeDestinationGo',()=>searchDestination('home'));
+function startGuidance(){if(!nav.route){navToast('Calculate a route first');return}if(!s.pos){gps();navToast('GPS location is required');return}nav.active=true;nav.lastStep=0;advanceGuidance([s.pos.coords.longitude,s.pos.coords.latitude]);safe('startNavigation',e=>{e.textContent='NAVIGATING';e.disabled=true});syncHomeNavigation();navToast('Navigation started. Keep your attention on the road.')}
+function stopGuidance(){nav.active=false;safe('startNavigation',e=>{e.textContent='START ROUTE';e.disabled=false});syncHomeNavigation();navToast('Navigation ended')}
+bind('destinationGo',()=>searchDestination('navigation'));bind('startNavigation',startGuidance);bind('stopNavigation',stopGuidance);bind('homeStartNavigation',startGuidance);bind('homeEndNavigation',stopGuidance);bind('centerMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});bind('recenterMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});
+const suggestionTimers={};
+async function suggestPlaces(id){
+ const input=$(id),box=$(id==='homeDestination'?'homePlaceResults':'placeResults');if(!input||!box)return;
+ const q=input.value.trim();if(q.length<2){box.hidden=true;box.textContent='';return}
+ const bias=s.pos?('&lat='+s.pos.coords.latitude+'&lon='+s.pos.coords.longitude):'&lat=18.5204&lon=73.8567';
+ box.hidden=false;box.textContent='Finding places…';
+ try{
+  const r=await fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+bias+'&bbox=68.1,6.5,97.4,35.7&limit=6&lang=en');
+  if(!r.ok)throw new Error('Search unavailable');const data=await r.json();
+  const items=(data.features||[]).map(f=>({name:[f.properties.name,f.properties.street,f.properties.city||f.properties.district,f.properties.state].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(', '),lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0]})).filter(x=>x.name);
+  box.replaceChildren();
+  if(!items.length){box.textContent='No suggestions found';return}
+  items.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p.name;b.addEventListener('click',()=>{nav.destination={name:p.name,lat:Number(p.lat),lon:Number(p.lon)};input.value=p.name;const other=$(id==='homeDestination'?'destination':'homeDestination');if(other)other.value=p.name;box.hidden=true;buildRoute()});box.appendChild(b)});
+  box.hidden=false;
+ }catch(_){box.textContent='Search suggestions unavailable. Check internet connection.'}
+}
+['destination','homeDestination'].forEach(id=>safe(id,e=>{
+ e.addEventListener('input',()=>{clearTimeout(suggestionTimers[id]);suggestionTimers[id]=setTimeout(()=>suggestPlaces(id),280)});
+ e.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();searchDestination(id==='homeDestination'?'home':'navigation')}if(ev.key==='Escape'){const box=$(id==='homeDestination'?'homePlaceResults':'placeResults');if(box)box.hidden=true}});
+}));
+bind('homeDestinationGo',()=>searchDestination('home'));
 
 bind('openPhone',()=>openUrl('tel:'));bind('openMessages',()=>openUrl('sms:'));
 function launchYouTubeMusic(){if(window.BikeOSNative&&window.BikeOSNative.openYouTubeMusic){window.BikeOSNative.openYouTubeMusic();return}openUrl('https://music.youtube.com')}
@@ -144,8 +164,8 @@ bind('call112',()=>{if(confirm('Open your phone dialler to call India emergency 
 bind('shareSOS',()=>{const n=store.get('emergency');if(!n){safe('sosStatus',e=>e.textContent='Save an emergency contact first.');tab('messages');return}if(!s.pos){gps();safe('sosStatus',e=>e.textContent='Waiting for GPS lock. Try again once location is available.');return}const c=s.pos.coords,body='Emergency. I need assistance. My location: https://maps.google.com/?q='+c.latitude+','+c.longitude;openUrl('sms:'+encodeURIComponent(n)+'?body='+encodeURIComponent(body))});
 
 bind('gpsRefresh',()=>{s.watch=null;gps();toast('Refreshing GPS')});
-bind('saveBikeSettings',()=>{safe('settingHelmet',e=>store.set('helmet',e.value));safe('settingGopro',e=>store.set('gopro',e.value));safe('helmetState',e=>e.textContent=store.get('helmet','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));safe('settingsStatus',e=>e.textContent='Bike profile saved on this device.');toast('Bike profile saved')});
-safe('settingHelmet',e=>e.value=store.get('helmet','NOT LINKED'));safe('settingGopro',e=>e.value=store.get('gopro','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));
+bind('saveBikeSettings',()=>{safe('settingHelmet',e=>store.set('helmet',e.value));safe('settingGopro',e=>store.set('gopro',e.value));safe('settingMapStyle',e=>store.set('mapStyle',e.value));safe('settingUnits',e=>store.set('units',e.value));safe('settingVoice',e=>store.set('voice',e.checked));safe('helmetState',e=>e.textContent=store.get('helmet','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));safe('settingsStatus',e=>e.textContent='Bike profile saved on this device.');toast('Bike profile saved')});
+safe('settingHelmet',e=>e.value=store.get('helmet','NOT LINKED'));safe('settingGopro',e=>e.value=store.get('gopro','NOT LINKED'));safe('settingMapStyle',e=>e.value=store.get('mapStyle','standard'));safe('settingUnits',e=>e.value=store.get('units','km'));safe('settingVoice',e=>e.checked=store.get('voice','false')==='true');safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));
 safe('emergencyContact',e=>e.value=store.get('emergency',''));
 safe('phoneBattery',e=>e.textContent='PHONE');safe('btStatus',e=>{e.title='Waiting for native Android Bluetooth status';e.classList.remove('green')});
 window.BikeOSBluetoothUpdate=function(status){const label=status.connected?'CONNECTED':(status.enabled?'NO DEVICE':'BLUETOOTH OFF');safe('btStatus',e=>{e.textContent='ᛒ';e.title='Bluetooth: '+label;e.classList.toggle('green',!!status.connected);e.classList.toggle('blue',!status.connected)});safe('helmetState',e=>e.textContent=status.connected?'CONNECTED':'NOT CONNECTED');safe('bikeConnection',e=>e.textContent=status.connected?'BLUETOOTH LINKED':'PHONE GPS READY');safe('homeConnection',e=>e.textContent=status.connected?'BLUETOOTH CONNECTED':'BLUETOOTH READY')};
