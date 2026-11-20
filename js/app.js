@@ -7,7 +7,25 @@ const s={watch:null,pos:null,riding:false,start:0,elapsed:0,timer:null,dist:0,ma
 function toast(msg){safe('toast',e=>{e.textContent=msg;e.classList.add('show');clearTimeout(e._timer);e._timer=setTimeout(()=>e.classList.remove('show'),2400)})}
 function duration(v){const n=Math.max(0,Math.floor(v)),m=Math.floor(n/60),sec=n%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
 function hav(a,b){const r=x=>x*Math.PI/180,R=6371,d1=r(b.lat-a.lat),d2=r(b.lon-a.lon),x=Math.sin(d1/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(d2/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
-function tab(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.v2-rail-btn[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));if(name==='navigation'){initMap();setTimeout(()=>nav.map&&nav.map.resize(),80)}if(name==='dashboard'){initHomeMap();setTimeout(()=>nav.homeMap&&nav.homeMap.resize(),80)}}
+let activeTab='dashboard';const tabHistory=[];
+function tab(name,record=true){
+ if(!document.getElementById('view-'+name))return;
+ if(record&&name!==activeTab)tabHistory.push(activeTab);
+ activeTab=name;
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));
+ document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+ document.querySelectorAll('.v2-rail-btn[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+ safe('globalBack',e=>e.hidden=name==='dashboard');
+ if(name==='navigation'){initMap();setTimeout(()=>nav.map&&nav.map.resize(),120)}
+ if(name==='dashboard'){initHomeMap();setTimeout(()=>nav.homeMap&&nav.homeMap.resize(),120)}
+}
+function goBack(){
+ if(tabHistory.length){tab(tabHistory.pop(),false);return true}
+ if(activeTab!=='dashboard'){tab('dashboard',false);return true}
+ return false;
+}
+window.BikeOSHandleBack=goBack;
+bind('globalBack',goBack);
 function mode(name){s.mode=name;store.set('mode',name);safe('urbanMode',e=>e.classList.toggle('active',name==='URBAN'));safe('rainMode',e=>e.classList.toggle('active',name==='RAIN'));document.body.classList.toggle('rain-mode',name==='RAIN');safe('telemetryNote',e=>e.textContent=name==='RAIN'?'RAIN PROFILE • CAUTION DISPLAY ENABLED':'URBAN PROFILE • CITY DISPLAY');toast(name+' profile selected. Bike ECU unchanged.')}
 function updateGauge(speed){const gauge=document.querySelector('.gauge');if(!gauge)return;const max=220;const fraction=Math.max(0,Math.min(speed/max,1));const end=225+270*fraction;gauge.style.background='conic-gradient(from 225deg, #e31b2f 0deg '+(270*fraction)+'deg, #343941 '+(270*fraction)+'deg 270deg, transparent 270deg 360deg)';gauge.style.setProperty('--speed-progress',String(fraction))}
 function stats(){const seconds=s.elapsed+(s.riding?(Date.now()-s.start)/1000:0),avg=s.samples.length?s.samples.reduce((a,b)=>a+b,0)/s.samples.length:0;const speed=s.pos&&s.pos.coords.speed!=null?Math.round(s.pos.coords.speed*3.6):0;[['speed',speed],['tripValue',s.dist.toFixed(1)],['avgSpeedValue',Math.round(avg)],['maxSpeedValue',Math.round(s.max)],['rideTimeValue',duration(seconds)],['statDistance',s.dist.toFixed(2)+' km'],['statAvg',Math.round(avg)+' km/h'],['statMax',Math.round(s.max)+' km/h'],['statTime',duration(seconds)]].forEach(([id,v])=>safe(id,e=>e.textContent=v));updateGauge(speed)}
@@ -24,10 +42,12 @@ bind('openNavigation',()=>{tab('navigation');safe('destination',e=>e.focus())});
 
 /* In-app navigation: MapLibre + OSM tiles + Nominatim geocoding + OSRM routing */
 const nav={map:null,homeMap:null,ready:false,homeReady:false,destination:null,route:null,steps:[],active:false,watch:null,userMarker:null,destMarker:null,routeLayer:false,lastStep:-1};
+function mapStyleUrl(){const key=store.get('maptilerKey','').trim();const style=store.get('mapStyle','streets-v2-dark');return key?'https://api.maptiler.com/maps/'+encodeURIComponent(style)+'/style.json?key='+encodeURIComponent(key):null}
+function createPremiumMap(container,zoom){const style=mapStyleUrl();if(!style){toast('Add your MapTiler API key in Settings to enable premium vector maps');tab('settings');return null}return new maplibregl.Map({container,style,center:[73.8567,18.5204],zoom,attributionControl:true,renderWorldCopies:false,fadeDuration:150, maxPitch:65});}
 function navToast(message){toast(message)}
 function initHomeMap(){
  if(nav.homeMap||!window.maplibregl||!$('homeBikeMap'))return;
- nav.homeMap=new maplibregl.Map({container:'homeBikeMap',style:{version:8,sources:{osmhome:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'osmhome',type:'raster',source:'osmhome'}]},center:[73.8567,18.5204],zoom:11,interactive:true,attributionControl:false});
+ nav.homeMap=createPremiumMap('homeBikeMap',11);if(!nav.homeMap)return;
  nav.homeMap.on('load',()=>{nav.homeReady=true;if(s.pos)updateUserMarker(s.pos.coords);if(nav.route)drawRoute()});
 }
 function homeText(id,value){safe(id,e=>e.textContent=value)}
@@ -41,7 +61,7 @@ function syncHomeNavigation(){
 }
 function initMap(){
  if(nav.map||!window.maplibregl||!$('bikeMap'))return;
- nav.map=new maplibregl.Map({container:'bikeMap',style:{version:8,sources:{osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'osm',type:'raster',source:'osm'}]},center:[73.8567,18.5204],zoom:12,attributionControl:false});
+ nav.map=createPremiumMap('bikeMap',12);if(!nav.map)return;
  nav.map.addControl(new maplibregl.NavigationControl({showCompass:true}),'top-right');
  nav.map.on('load',()=>{nav.ready=true;if(s.pos)updateUserMarker(s.pos.coords);if(nav.route)drawRoute()});
  nav.map.on('error',e=>console.warn('Map tile error',e));
@@ -184,8 +204,8 @@ bind('call112',()=>{if(confirm('Open your phone dialler to call India emergency 
 bind('shareSOS',()=>{const n=store.get('emergency');if(!n){safe('sosStatus',e=>e.textContent='Save an emergency contact first.');tab('settings');return}if(!s.pos){gps();safe('sosStatus',e=>e.textContent='Waiting for GPS lock. Try again once location is available.');return}const c=s.pos.coords,body='Emergency. I need assistance. My location: https://maps.google.com/?q='+c.latitude+','+c.longitude;openUrl('sms:'+encodeURIComponent(n)+'?body='+encodeURIComponent(body))});
 
 bind('gpsRefresh',()=>{s.watch=null;gps();toast('Refreshing GPS')});
-bind('saveBikeSettings',()=>{safe('settingHelmet',e=>store.set('helmet',e.value));safe('settingGopro',e=>store.set('gopro',e.value));safe('settingMapStyle',e=>store.set('mapStyle',e.value));safe('settingUnits',e=>store.set('units',e.value));safe('settingVoice',e=>store.set('voice',e.checked));safe('helmetState',e=>e.textContent=store.get('helmet','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));safe('settingsStatus',e=>e.textContent='Bike profile saved on this device.');toast('Bike profile saved')});
-safe('settingHelmet',e=>e.value=store.get('helmet','NOT LINKED'));safe('settingGopro',e=>e.value=store.get('gopro','NOT LINKED'));safe('settingMapStyle',e=>e.value=store.get('mapStyle','standard'));safe('settingUnits',e=>e.value=store.get('units','km'));safe('settingVoice',e=>e.checked=store.get('voice','false')==='true');safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));
+bind('saveBikeSettings',()=>{safe('mapTilerKey',e=>store.set('maptilerKey',e.value.trim()));safe('settingHelmet',e=>store.set('helmet',e.value));safe('settingGopro',e=>store.set('gopro',e.value));safe('settingMapStyle',e=>store.set('mapStyle',e.value));safe('settingUnits',e=>store.set('units',e.value));safe('settingVoice',e=>store.set('voice',e.checked));safe('helmetState',e=>e.textContent=store.get('helmet','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));safe('settingsStatus',e=>e.textContent='Bike profile saved on this device. Premium map style will reload when you reopen Navigation.');if(nav.map){nav.map.remove();nav.map=null;nav.ready=false}if(nav.homeMap){nav.homeMap.remove();nav.homeMap=null;nav.homeReady=false}toast('Settings saved. Reopen the map to apply the premium style.')});
+safe('mapTilerKey',e=>e.value=store.get('maptilerKey',''));safe('settingHelmet',e=>e.value=store.get('helmet','NOT LINKED'));safe('settingGopro',e=>e.value=store.get('gopro','NOT LINKED'));safe('settingMapStyle',e=>e.value=store.get('mapStyle','streets-v2-dark'));safe('settingUnits',e=>e.value=store.get('units','km'));safe('settingVoice',e=>e.checked=store.get('voice','false')==='true');safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));
 safe('emergencyContact',e=>e.value=store.get('emergency',''));
 safe('phoneBattery',e=>e.textContent='PHONE');safe('btStatus',e=>{e.title='Waiting for native Android Bluetooth status';e.classList.remove('green')});
 window.BikeOSBluetoothUpdate=function(status){const label=status.connected?'CONNECTED':(status.enabled?'NO DEVICE':'BLUETOOTH OFF');safe('btStatus',e=>{e.textContent='ᛒ';e.title='Bluetooth: '+label;e.classList.toggle('green',!!status.connected);e.classList.toggle('blue',!status.connected)});safe('helmetState',e=>e.textContent=status.connected?'CONNECTED':'NOT CONNECTED');safe('bikeConnection',e=>e.textContent=status.connected?'BLUETOOTH LINKED':'PHONE GPS READY');safe('homeConnection',e=>e.textContent=status.connected?'BLUETOOTH CONNECTED':'BLUETOOTH READY')};
@@ -195,5 +215,5 @@ if(navigator.getBattery)navigator.getBattery().then(b=>{const f=()=>safe('phoneB
 function tick(){const d=new Date();safe('clock',e=>e.textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));safe('date',e=>e.textContent=d.toLocaleDateString([],{weekday:'short',day:'2-digit',month:'short',year:'numeric'}))}
 mode(s.mode);history();tick();setInterval(tick,1000);gps();stats();initHomeMap();syncHomeNavigation();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-window.addEventListener('error',e=>toast('Dashboard error: '+(e.message||'unknown')));
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&goBack())e.preventDefault()});window.addEventListener('error',e=>toast('Dashboard error: '+(e.message||'unknown')));
 })();
