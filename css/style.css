@@ -197,3 +197,23 @@ body{min-height:100vh;background:radial-gradient(ellipse at 72% 18%,#142638 0,tr
 @media(max-width:1050px){.v2-cockpit{grid-template-columns:68px minmax(0,1fr)}.v2-split{grid-template-columns:minmax(220px,.75fr) minmax(0,1.5fr)}.v2-speed-ring{width:min(25vw,225px)}.v2-topbar .bike-title{min-width:160px;padding:0 12px}}
 @media(max-width:760px){.v2-app{padding:8px}.v2-topbar{height:56px;padding:0 10px;gap:8px}.v2-topbar .brand{min-width:0}.v2-topbar .brand-icon{width:34px;height:34px;line-height:30px;font-size:19px}.v2-topbar .brand-name{font-size:17px}.v2-topbar .brand-sub{font-size:7px}.v2-topbar .bike-title{display:none}.v2-topbar .quick-status{gap:4px}.v2-topbar .status-icon{width:26px;height:26px}.v2-topbar .clock{min-width:70px}.v2-topbar .clock b{font-size:14px}.v2-topbar .clock span{font-size:8px}.v2-topbar .gear-btn{width:32px;height:32px}.v2-cockpit{grid-template-columns:1fr;min-height:0}.v2-rail{display:none}.v2-greeting{padding:5px 2px}.v2-weather-chip{display:none}.v2-split{grid-template-columns:1fr;min-height:0}.v2-speed-panel{min-height:280px}.v2-speed-ring{width:180px;margin:10px auto}.v2-trip-strip{margin-top:8px}.v2-ride-mode{margin-top:8px}.v2-map-panel{min-height:380px}.v2-map-canvas{min-height:210px}.v2-bottom-grid{grid-template-columns:1fr}.v2-bottom-nav{display:grid;grid-template-columns:repeat(6,1fr);min-height:62px;margin-top:5px;padding:4px;border-radius:15px}.v2-bottom-nav .nav-item{gap:2px;padding:4px 1px}.v2-bottom-nav .nav-item span{font-size:19px}.v2-bottom-nav .nav-item b{font-size:9px}.v2-route-footer{grid-template-columns:1fr 1fr}.v2-route-actions{grid-column:1/-1}.v2-route-actions button{flex:1}.v2-app .nav-layout{flex-direction:column}.v2-app .guidance-panel{width:100%;max-height:230px;overflow:auto}.v2-app .map-stage{min-height:300px}.v2-app .subview{margin:10px auto;padding:18px}}
 @media(max-height:620px) and (min-width:761px){.v2-cockpit{min-height:calc(100vh - 100px)}.v2-greeting h1{font-size:21px}.v2-greeting{padding:0}.v2-split{min-height:300px}.v2-speed-panel{padding:10px}.v2-speed-ring{width:min(22vw,185px);margin:7px auto}.v2-trip-strip{margin-top:7px;padding:7px 0}.v2-map-panel{padding:10px;gap:7px}.v2-map-canvas{min-height:130px}.v2-bottom-grid{gap:7px}.v2-mini-card{padding:7px 10px}}
+
+/* BikeOS v3: premium cockpit controls and navigation ergonomics */
+.global-back{width:44px;height:44px;flex:0 0 44px;border:1px solid #46515e;border-radius:14px;background:linear-gradient(145deg,#1b2530,#0b1118);color:#f4f8ff;font-size:34px;line-height:30px;display:grid;place-items:center;box-shadow:0 5px 18px #0008;cursor:pointer}
+.global-back[hidden]{display:none}
+.subhead{position:relative;padding-left:64px!important;min-height:58px}
+.screen-back{position:absolute;left:0;top:4px;width:46px;height:46px;border-radius:14px;border:1px solid #455362;background:#121c27;color:#fff;font-size:28px}
+.map-key-field{grid-column:1/-1;display:flex;flex-direction:column;gap:8px}
+.map-key-field input{min-height:48px;padding:12px 14px;border:1px solid #526273;border-radius:12px;background:#080e15;color:#fff;font:600 16px Rajdhani}
+.map-key-field small{color:#8e9ba8;font-size:13px}
+.v2-map-panel,.guidance-panel,.v2-speed-panel{box-shadow:0 18px 48px #0009,inset 0 1px #ffffff12;border-color:#344251}
+.v2-map-canvas,.map-stage{background:#101923;border:1px solid #405365;border-radius:16px;overflow:hidden}
+#homeBikeMap,#bikeMap{width:100%;height:100%;min-height:260px}
+.map-stage{position:relative;min-height:64vh}
+.nav-layout{gap:16px}
+.guidance-panel{backdrop-filter:blur(18px);background:linear-gradient(160deg,#17212d,#0a1018)}
+.v2-map-heading h2{letter-spacing:-.02em}
+.v2-live i,.v2-map-status i{box-shadow:0 0 12px #35e6a0}
+.user-map-marker{width:24px;height:24px;border:3px solid #fff;border-radius:50%;background:#15a9ff;box-shadow:0 0 0 7px #159dff42,0 0 22px #159dff}
+.map-search-wrap,.home-search-wrap{z-index:12}
+@media(max-width:760px){.global-back{width:38px;height:38px;flex-basis:38px}.map-stage{min-height:48vh}.map-key-field{grid-column:1}}
