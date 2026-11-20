@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090b"><meta name="description" content="BikeOS JARVIS cockpit for TVS Ronin Nimbus Grey SE">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=carplay-home-v1">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=carplay-home-v2">
 <title>BikeOS JARVIS | TVS Ronin</title>
 </head>
 <body>
@@ -21,10 +21,9 @@
 
 <section id="view-navigation" class="view nav-screen">
  <div class="nav-toolbar">
-  <div class="nav-search"><input id="destination" autocomplete="off" placeholder="Search destination or address"><button class="red-button" id="destinationGo">GO</button></div>
+  <div class="nav-search-wrap"><div class="nav-search"><input id="destination" autocomplete="off" placeholder="Search destination or address"><button class="red-button" id="destinationGo">GO</button></div><div id="placeResults" class="place-results map-search-results" hidden></div></div>
   <button id="centerMap" class="map-tool" aria-label="Center on my location">◎</button>
  </div>
- <div id="placeResults" class="place-results" hidden></div>
  <div class="nav-layout">
   <div class="map-stage"><div id="bikeMap" aria-label="Live navigation map"></div><div class="map-attribution">© OpenStreetMap contributors</div><div class="map-locate"><button id="recenterMap">⌖</button></div></div>
   <aside class="guidance-panel">
@@ -37,7 +36,7 @@
  </div>
 </section>
 
-<section id="view-music" class="view panel subview"><div class="subhead"><span>♫</span><div><h2>Music</h2><p>Launch and control your music app</p></div></div><div class="app-links"><button data-music="spotify">Spotify</button><button data-music="youtube">YouTube Music</button><button data-music="apple">Apple Music</button></div><p class="note">Playback buttons open your selected music app. Direct playback control depends on Android media-session permissions and the music app.</p></section>
+<section id="view-music" class="view panel subview"><div class="subhead"><span>♫</span><div><h2>Music</h2><p>Launch and control your music app</p></div></div><div class="app-links youtube-music-only"><button class="youtube-music-launch" id="openYouTubeMusic">▶ OPEN YOUTUBE MUSIC</button></div><p class="note">BikeOS opens the YouTube Music Android app when installed. Otherwise it opens YouTube Music on the web. Playback controls inside BikeOS require a separate Android media-session integration.</p></section>
 
 <section id="view-calls" class="view panel subview"><div class="subhead"><span>☎</span><div><h2>Calls</h2><p>Phone connectivity and call shortcuts</p></div></div><div class="call-state" id="callState">No call information available</div><button class="red-button" id="openPhone">OPEN PHONE APP</button><p class="note">Your iPhone is the call phone. Caller ID on this Samsung requires a separate iPhone-to-Android Bluetooth notification bridge. This dashboard does not claim that bridge is active.</p></section>
 
@@ -58,5 +57,5 @@
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
 </div>
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=carplay-home-v1"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=carplay-home-v2"></script>
 </body></html>
