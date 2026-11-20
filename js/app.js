@@ -153,15 +153,35 @@ async function suggestPlaces(id){
 }));
 bind('homeDestinationGo',()=>searchDestination('home'));
 
-bind('openPhone',()=>openUrl('tel:'));bind('openMessages',()=>openUrl('sms:'));
+bind('openPhone',()=>openUrl('tel:'));
 function launchYouTubeMusic(){if(window.BikeOSNative&&window.BikeOSNative.openYouTubeMusic){window.BikeOSNative.openYouTubeMusic();return}openUrl('https://music.youtube.com')}
+
+function mediaTime(ms){const n=Math.max(0,Math.floor((Number(ms)||0)/1000));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
+function refreshYT(){if(window.BikeOSNative&&window.BikeOSNative.refreshMedia)window.BikeOSNative.refreshMedia()}
+function mediaCommand(command){if(window.BikeOSNative&&window.BikeOSNative.mediaCommand)window.BikeOSNative.mediaCommand(command);else toast('Media controls require the Android app')}
+window.BikeOSMediaUpdate=function(m){
+ safe('ytTitle',e=>e.textContent=m.title||'Nothing playing');
+ safe('ytArtist',e=>e.textContent=m.artist||'Start YouTube Music on this phone');
+ safe('ytAlbum',e=>e.textContent=m.album||'');
+ safe('ytPlayPause',e=>{e.textContent=m.playing?'Ⅱ':'▶';e.setAttribute('aria-label',m.playing?'Pause':'Play')});
+ safe('ytPosition',e=>e.textContent=mediaTime(m.position));
+ safe('ytDuration',e=>e.textContent=mediaTime(m.duration));
+ safe('ytProgressBar',e=>e.style.width=(m.duration?Math.min(100,100*(m.position||0)/m.duration):0)+'%');
+ safe('ytStatus',e=>e.textContent=!m.permission?'Enable notification access to connect the media session':(m.available?'Connected to YouTube Music playback':'Waiting for an active YouTube Music session'));
+ safe('ytPermission',e=>{e.hidden=!!m.permission;e.textContent='ENABLE MEDIA ACCESS'});
+};
+bind('ytPrevious',()=>mediaCommand('previous'));
+bind('ytNext',()=>mediaCommand('next'));
+bind('ytPlayPause',()=>mediaCommand('toggle'));
+bind('ytPermission',()=>{if(window.BikeOSNative&&window.BikeOSNative.requestMediaAccess)window.BikeOSNative.requestMediaAccess();else toast('Open the Android app to enable media access')});
 bind('openYouTubeMusic',launchYouTubeMusic);
+
 bind('playMusic',launchYouTubeMusic);bind('prevTrack',()=>toast('Use previous track in your music app'));bind('nextTrack',()=>toast('Use next track in your music app'));
 bind('startRide',startRide);bind('endRide',endRide);
 bind('resetTrip',()=>{if(s.riding){toast('End the ride before resetting');return}s.dist=0;s.max=0;s.samples=[];s.elapsed=0;s.last=null;stats();toast('Trip A reset')});
 bind('saveEmergency',()=>{const n=$('emergencyContact')?.value.trim()||'';if(!/^[+0-9 ()-]{7,20}$/.test(n)){safe('sosStatus',e=>e.textContent='Enter a valid phone number.');return}store.set('emergency',n);safe('sosStatus',e=>e.textContent='Emergency contact saved on this device.');toast('Emergency contact saved')});
 bind('call112',()=>{if(confirm('Open your phone dialler to call India emergency number 112?'))openUrl('tel:112')});
-bind('shareSOS',()=>{const n=store.get('emergency');if(!n){safe('sosStatus',e=>e.textContent='Save an emergency contact first.');tab('messages');return}if(!s.pos){gps();safe('sosStatus',e=>e.textContent='Waiting for GPS lock. Try again once location is available.');return}const c=s.pos.coords,body='Emergency. I need assistance. My location: https://maps.google.com/?q='+c.latitude+','+c.longitude;openUrl('sms:'+encodeURIComponent(n)+'?body='+encodeURIComponent(body))});
+bind('shareSOS',()=>{const n=store.get('emergency');if(!n){safe('sosStatus',e=>e.textContent='Save an emergency contact first.');tab('settings');return}if(!s.pos){gps();safe('sosStatus',e=>e.textContent='Waiting for GPS lock. Try again once location is available.');return}const c=s.pos.coords,body='Emergency. I need assistance. My location: https://maps.google.com/?q='+c.latitude+','+c.longitude;openUrl('sms:'+encodeURIComponent(n)+'?body='+encodeURIComponent(body))});
 
 bind('gpsRefresh',()=>{s.watch=null;gps();toast('Refreshing GPS')});
 bind('saveBikeSettings',()=>{safe('settingHelmet',e=>store.set('helmet',e.value));safe('settingGopro',e=>store.set('gopro',e.value));safe('settingMapStyle',e=>store.set('mapStyle',e.value));safe('settingUnits',e=>store.set('units',e.value));safe('settingVoice',e=>store.set('voice',e.checked));safe('helmetState',e=>e.textContent=store.get('helmet','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));safe('settingsStatus',e=>e.textContent='Bike profile saved on this device.');toast('Bike profile saved')});
@@ -170,7 +190,7 @@ safe('emergencyContact',e=>e.value=store.get('emergency',''));
 safe('phoneBattery',e=>e.textContent='PHONE');safe('btStatus',e=>{e.title='Waiting for native Android Bluetooth status';e.classList.remove('green')});
 window.BikeOSBluetoothUpdate=function(status){const label=status.connected?'CONNECTED':(status.enabled?'NO DEVICE':'BLUETOOTH OFF');safe('btStatus',e=>{e.textContent='ᛒ';e.title='Bluetooth: '+label;e.classList.toggle('green',!!status.connected);e.classList.toggle('blue',!status.connected)});safe('helmetState',e=>e.textContent=status.connected?'CONNECTED':'NOT CONNECTED');safe('bikeConnection',e=>e.textContent=status.connected?'BLUETOOTH LINKED':'PHONE GPS READY');safe('homeConnection',e=>e.textContent=status.connected?'BLUETOOTH CONNECTED':'BLUETOOTH READY')};
 bind('bluetoothHelp',()=>{if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth){window.BikeOSNative.refreshBluetooth();toast('Refreshing Android Bluetooth status')}else toast('Native Bluetooth status is available in the Android APK')});
-if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth)window.BikeOSNative.refreshBluetooth();safe('phoneStatus',e=>e.title='Phone call bridge not connected');safe('homePhoneLink',e=>e.textContent='Bluetooth / Wi-Fi');safe('eta',e=>e.textContent='--:--');
+if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth)window.BikeOSNative.refreshBluetooth();refreshYT();safe('phoneStatus',e=>e.title='Phone call bridge not connected');safe('homePhoneLink',e=>e.textContent='Bluetooth / Wi-Fi');safe('eta',e=>e.textContent='--:--');
 if(navigator.getBattery)navigator.getBattery().then(b=>{const f=()=>safe('phoneBattery',e=>e.textContent=Math.round(b.level*100)+'%');f();b.addEventListener('levelchange',f)}).catch(()=>{});
 function tick(){const d=new Date();safe('clock',e=>e.textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));safe('date',e=>e.textContent=d.toLocaleDateString([],{weekday:'short',day:'2-digit',month:'short',year:'numeric'}))}
 mode(s.mode);history();tick();setInterval(tick,1000);gps();stats();initHomeMap();syncHomeNavigation();
