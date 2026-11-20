@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090b"><meta name="description" content="BikeOS JARVIS cockpit for TVS Ronin Nimbus Grey SE">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=bugfix-pack-1">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=yt-native-controller-1">
 <title>BikeOS JARVIS | TVS Ronin</title>
 </head>
 <body>
@@ -36,7 +36,7 @@
  </div>
 </section>
 
-<section id="view-music" class="view panel subview"><div class="subhead"><span>♫</span><div><h2>Music</h2><p>Launch and control your music app</p></div></div><div class="app-links youtube-music-only"><button class="youtube-music-launch" id="openYouTubeMusic">▶ OPEN YOUTUBE MUSIC</button></div><p class="note">BikeOS opens the YouTube Music Android app when installed. Otherwise it opens YouTube Music on the web. Playback controls inside BikeOS require a separate Android media-session integration.</p></section>
+<section id="view-music" class="view panel subview music-view"><div class="subhead"><span>♫</span><div><h2>YouTube Music</h2><p>Control playback without leaving BikeOS</p></div></div><div class="yt-player"><div class="yt-art" id="ytArtwork">♫</div><div class="yt-track"><b id="ytTitle">Nothing playing</b><small id="ytArtist">Start YouTube Music on this phone</small><span id="ytAlbum"></span></div><div class="yt-source">YOUTUBE MUSIC</div><div class="yt-controls"><button id="ytPrevious" aria-label="Previous track">⏮</button><button id="ytPlayPause" class="yt-play" aria-label="Play or pause">▶</button><button id="ytNext" aria-label="Next track">⏭</button></div><div class="yt-progress"><span id="ytPosition">--:--</span><div><i id="ytProgressBar"></i></div><span id="ytDuration">--:--</span></div><div id="ytStatus" class="note">Connect to YouTube Music media session to begin.</div><button id="ytPermission" class="red-button">ENABLE MEDIA ACCESS</button><button id="openYouTubeMusic" class="yt-open">OPEN YOUTUBE MUSIC ONCE</button></div></section>
 
 <section id="view-calls" class="view panel subview"><div class="subhead"><span>☎</span><div><h2>Calls</h2><p>Phone connectivity and call shortcuts</p></div></div><div class="call-state" id="callState">No call information available</div><button class="red-button" id="openPhone">OPEN PHONE APP</button><p class="note">Your iPhone is the call phone. Caller ID on this Samsung requires a separate iPhone-to-Android Bluetooth notification bridge. This dashboard does not claim that bridge is active.</p></section>
 
@@ -57,5 +57,5 @@
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
 </div>
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=bugfix-pack-1"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=yt-native-controller-1"></script>
 </body></html>
