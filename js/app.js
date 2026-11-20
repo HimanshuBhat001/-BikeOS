@@ -7,7 +7,7 @@ const s={watch:null,pos:null,riding:false,start:0,elapsed:0,timer:null,dist:0,ma
 function toast(msg){safe('toast',e=>{e.textContent=msg;e.classList.add('show');clearTimeout(e._timer);e._timer=setTimeout(()=>e.classList.remove('show'),2400)})}
 function duration(v){const n=Math.max(0,Math.floor(v)),m=Math.floor(n/60),sec=n%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
 function hav(a,b){const r=x=>x*Math.PI/180,R=6371,d1=r(b.lat-a.lat),d2=r(b.lon-a.lon),x=Math.sin(d1/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(d2/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
-function tab(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));if(name==='navigation'){initMap();setTimeout(()=>nav.map&&nav.map.resize(),80)}}
+function tab(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));if(name==='navigation'){initMap();setTimeout(()=>nav.map&&nav.map.resize(),80)}if(name==='dashboard'){initHomeMap();setTimeout(()=>nav.homeMap&&nav.homeMap.resize(),80)}}
 function mode(name){s.mode=name;store.set('mode',name);safe('urbanMode',e=>e.classList.toggle('active',name==='URBAN'));safe('rainMode',e=>e.classList.toggle('active',name==='RAIN'));document.body.classList.toggle('rain-mode',name==='RAIN');safe('telemetryNote',e=>e.textContent=name==='RAIN'?'RAIN PROFILE • CAUTION DISPLAY ENABLED':'URBAN PROFILE • CITY DISPLAY');toast(name+' profile selected. Bike ECU unchanged.')}
 function updateGauge(speed){const gauge=document.querySelector('.gauge');if(!gauge)return;const max=220;const fraction=Math.max(0,Math.min(speed/max,1));const end=225+270*fraction;gauge.style.background='conic-gradient(from 225deg, #e31b2f 0deg '+(270*fraction)+'deg, #343941 '+(270*fraction)+'deg 270deg, transparent 270deg 360deg)';gauge.style.setProperty('--speed-progress',String(fraction))}
 function stats(){const seconds=s.elapsed+(s.riding?(Date.now()-s.start)/1000:0),avg=s.samples.length?s.samples.reduce((a,b)=>a+b,0)/s.samples.length:0;const speed=s.pos&&s.pos.coords.speed!=null?Math.round(s.pos.coords.speed*3.6):0;[['speed',speed],['tripValue',s.dist.toFixed(1)],['avgSpeedValue',Math.round(avg)],['maxSpeedValue',Math.round(s.max)],['rideTimeValue',duration(seconds)],['statDistance',s.dist.toFixed(2)+' km'],['statAvg',Math.round(avg)+' km/h'],['statMax',Math.round(s.max)+' km/h'],['statTime',duration(seconds)]].forEach(([id,v])=>safe(id,e=>e.textContent=v));updateGauge(speed)}
@@ -27,7 +27,7 @@ const nav={map:null,homeMap:null,ready:false,homeReady:false,destination:null,ro
 function navToast(message){toast(message)}
 function initHomeMap(){
  if(nav.homeMap||!window.maplibregl||!$('homeBikeMap'))return;
- nav.homeMap=new maplibregl.Map({container:'homeBikeMap',style:{version:8,sources:{osmhome:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'osmhome',type:'raster',source:'osmhome'}]},center:[73.8567,18.5204],zoom:11,interactive:false,attributionControl:false});
+ nav.homeMap=new maplibregl.Map({container:'homeBikeMap',style:{version:8,sources:{osmhome:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'osmhome',type:'raster',source:'osmhome'}]},center:[73.8567,18.5204],zoom:11,interactive:true,attributionControl:false});
  nav.homeMap.on('load',()=>{nav.homeReady=true;if(s.pos)updateUserMarker(s.pos.coords);if(nav.route)drawRoute()});
 }
 function homeText(id,value){safe(id,e=>e.textContent=value)}
@@ -69,11 +69,11 @@ function drawRoute(){
  else{nav.map.addSource('bikeos-route',{type:'geojson',data});nav.map.addLayer({id:'bikeos-route-casing',type:'line',source:'bikeos-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#08090b','line-width':11,'line-opacity':.85}});nav.map.addLayer({id:'bikeos-route-line',type:'line',source:'bikeos-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#f21d32','line-width':6}})}
  const coords=nav.route.geometry.coordinates;nav.map.fitBounds(coords.reduce((b,p)=>b.extend(p),new maplibregl.LngLatBounds(coords[0],coords[0])),{padding:{top:70,bottom:70,left:50,right:50},duration:700});
 }
-async function searchDestination(){
- const q=$('destination')?.value.trim();if(!q){navToast('Enter a destination first');return}
+async function searchDestination(source='navigation'){
+ const home=source==='home';const input=$(home?'homeDestination':'destination');const q=input?.value.trim();if(!q){navToast('Enter a destination first');return}
  const btn=$('destinationGo');if(btn){btn.disabled=true;btn.textContent='SEARCHING'}
  try{
-  const box=$('placeResults');box.hidden=false;box.textContent='Searching places…';
+  const box=$(home?'homePlaceResults':'placeResults');box.hidden=false;box.textContent='Searching places…';
   let places=[];
   const bias=s.pos?('&lat='+s.pos.coords.latitude+'&lon='+s.pos.coords.longitude):'&lat=18.5204&lon=73.8567';
   try{
@@ -84,7 +84,7 @@ async function searchDestination(){
    try{const nr=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&addressdetails=1&countrycodes=in&q='+encodeURIComponent(q),{headers:{Accept:'application/json'}});if(nr.ok)places=await nr.json()}catch(_){}
   }
   if(!places.length){box.textContent='No results from either place-search service. Check internet access and try a fuller address or nearby landmark.';return}
-  box.innerHTML='';places.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p.display_name;b.addEventListener('click',()=>{nav.destination={name:p.display_name,lat:Number(p.lat),lon:Number(p.lon)};$('destination').value=p.display_name;box.hidden=true;buildRoute()});box.appendChild(b)});box.hidden=false;
+  box.innerHTML='';places.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p.display_name;b.addEventListener('click',()=>{nav.destination={name:p.display_name,lat:Number(p.lat),lon:Number(p.lon)};if(input)input.value=p.display_name;const other=$(home?'destination':'homeDestination');if(other)other.value=p.display_name;box.hidden=true;buildRoute()});box.appendChild(b)});box.hidden=false;
  }catch(e){navToast(e.message+'; check your internet connection.')}finally{if(btn){btn.disabled=false;btn.textContent='GO'}}
 }
 async function buildRoute(){
@@ -130,7 +130,7 @@ function advanceGuidance(ll){
 function startGuidance(){if(!nav.route){navToast('Calculate a route first');return}if(!s.pos){navToast('GPS location is required');return}nav.active=true;nav.lastStep=0;advanceGuidance([s.pos.coords.longitude,s.pos.coords.latitude]);safe('startNavigation',e=>{e.textContent='NAVIGATING';e.disabled=true});navToast('Navigation started. Keep your attention on the road.')}
 function stopGuidance(){nav.active=false;safe('startNavigation',e=>{e.textContent='START ROUTE';e.disabled=false});navToast('Navigation ended')}
 bind('destinationGo',searchDestination);bind('startNavigation',startGuidance);bind('stopNavigation',stopGuidance);bind('centerMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});bind('recenterMap',()=>{if(s.pos&&nav.map)nav.map.flyTo({center:[s.pos.coords.longitude,s.pos.coords.latitude],zoom:16})});
-safe('destination',e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')searchDestination()}));
+['destination','homeDestination'].forEach(id=>safe(id,e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')searchDestination(id==='homeDestination'?'home':'navigation')})));bind('homeDestinationGo',()=>searchDestination('home'));
 
 bind('openPhone',()=>openUrl('tel:'));bind('openMessages',()=>openUrl('sms:'));
 const music={spotify:'https://open.spotify.com',youtube:'https://music.youtube.com',apple:'https://music.apple.com'};
@@ -147,9 +147,9 @@ bind('saveBikeSettings',()=>{safe('settingHelmet',e=>store.set('helmet',e.value)
 safe('settingHelmet',e=>e.value=store.get('helmet','NOT LINKED'));safe('settingGopro',e=>e.value=store.get('gopro','NOT LINKED'));safe('goproState',e=>e.textContent=store.get('gopro','NOT LINKED'));
 safe('emergencyContact',e=>e.value=store.get('emergency',''));
 safe('phoneBattery',e=>e.textContent='PHONE');safe('btStatus',e=>{e.title='Waiting for native Android Bluetooth status';e.classList.remove('green')});
-window.BikeOSBluetoothUpdate=function(status){const label=status.connected?'CONNECTED':(status.enabled?'NO DEVICE':'BLUETOOTH OFF');safe('btStatus',e=>{e.textContent='ᛒ';e.title='Bluetooth: '+label;e.classList.toggle('green',!!status.connected);e.classList.toggle('blue',!status.connected)});safe('helmetState',e=>e.textContent=status.connected?'CONNECTED':'NOT CONNECTED');safe('bikeConnection',e=>e.textContent=status.connected?'BLUETOOTH LINKED':'PHONE GPS READY')};
+window.BikeOSBluetoothUpdate=function(status){const label=status.connected?'CONNECTED':(status.enabled?'NO DEVICE':'BLUETOOTH OFF');safe('btStatus',e=>{e.textContent='ᛒ';e.title='Bluetooth: '+label;e.classList.toggle('green',!!status.connected);e.classList.toggle('blue',!status.connected)});safe('helmetState',e=>e.textContent=status.connected?'CONNECTED':'NOT CONNECTED');safe('bikeConnection',e=>e.textContent=status.connected?'BLUETOOTH LINKED':'PHONE GPS READY');safe('homeConnection',e=>e.textContent=status.connected?'BLUETOOTH CONNECTED':'BLUETOOTH READY')};
 bind('bluetoothHelp',()=>{if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth){window.BikeOSNative.refreshBluetooth();toast('Refreshing Android Bluetooth status')}else toast('Native Bluetooth status is available in the Android APK')});
-if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth)window.BikeOSNative.refreshBluetooth();safe('phoneStatus',e=>e.title='Phone call bridge not connected');safe('eta',e=>e.textContent='--:--');
+if(window.BikeOSNative&&window.BikeOSNative.refreshBluetooth)window.BikeOSNative.refreshBluetooth();safe('phoneStatus',e=>e.title='Phone call bridge not connected');safe('homePhoneLink',e=>e.textContent='Bluetooth / Wi-Fi');safe('eta',e=>e.textContent='--:--');
 if(navigator.getBattery)navigator.getBattery().then(b=>{const f=()=>safe('phoneBattery',e=>e.textContent=Math.round(b.level*100)+'%');f();b.addEventListener('levelchange',f)}).catch(()=>{});
 function tick(){const d=new Date();safe('clock',e=>e.textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));safe('date',e=>e.textContent=d.toLocaleDateString([],{weekday:'short',day:'2-digit',month:'short',year:'numeric'}))}
 mode(s.mode);history();tick();setInterval(tick,1000);gps();stats();initHomeMap();syncHomeNavigation();
