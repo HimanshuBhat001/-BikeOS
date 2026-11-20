@@ -42,9 +42,9 @@
 
   <aside class="right-stack">
    <section class="nav-card panel">
-    <div class="turn-row"><span class="turn-icon" id="turnIcon">➜</span><div><b id="navDistance">Navigation ready</b><small id="navInstruction">Choose a destination in Maps</small></div></div>
-    <div class="map-preview"><div class="map-grid"></div><svg viewBox="0 0 420 150" preserveAspectRatio="none"><path d="M30 125 L90 125 L140 78 L230 78 L280 30 L390 30" class="route-line"/><path d="M30 125 L90 125 L140 78 L230 78 L280 30 L390 30" class="route-glow"/><path d="M280 30 l-14 8 4 -17z" class="route-arrow"/></svg><span class="map-pin">➤</span></div>
-    <div class="nav-foot"><span id="eta">ETA --</span><span id="navRemaining">GPS NOT LOCKED</span><button id="openNavigation">OPEN MAPS ↗</button></div>
+    <div class="turn-row"><span class="turn-icon" id="homeTurnIcon">➜</span><div><b id="homeNavDistance">Navigation ready</b><small id="homeNavInstruction">Search a destination below</small></div></div>
+    <div class="map-preview home-map-preview"><div id="homeBikeMap" aria-label="Live route preview"></div><span class="home-map-overlay">LIVE ROUTE</span></div>
+    <div class="nav-foot"><span id="homeEta">ETA --</span><span id="homeNavRemaining">GPS WAITING</span><button id="openNavigation">OPEN NAVIGATION ↗</button></div>
    </section>
    <section class="music-card panel">
     <div class="album-art">♫</div><div class="track"><b id="trackTitle">Music controls</b><small id="trackArtist">Open your preferred music app</small></div><span class="spotify">●</span>
