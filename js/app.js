@@ -76,7 +76,7 @@ async function buildRoute(){
 function instructionText(step){
  const m=step.maneuver||{},type=m.type||'continue',mod=m.modifier?(' '+m.modifier):'';
  const road=step.name?' onto '+step.name:'';
- const map={turn:'Turn'+mod,continue:'Continue',new name:'Continue',merge:'Merge'+mod,roundabout:'At the roundabout, take the exit',rotary:'At the roundabout, take the exit',depart:'Head'+mod,arrive:'You have arrived',fork:'Keep'+mod,off ramp:'Take the exit'+mod,on ramp:'Take the ramp'+mod};
+ const map={turn:'Turn'+mod,continue:'Continue','new name':'Continue',merge:'Merge'+mod,roundabout:'At the roundabout, take the exit',rotary:'At the roundabout, take the exit',depart:'Head'+mod,arrive:'You have arrived',fork:'Keep'+mod,'off ramp':'Take the exit'+mod,'on ramp':'Take the ramp'+mod};
  return (map[type]||type.replace(/_/g,' '))+road;
 }
 function renderSteps(){
