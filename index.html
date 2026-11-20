@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090b"><meta name="description" content="BikeOS JARVIS cockpit for TVS Ronin Nimbus Grey SE">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=bikeos-nav-v2">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><link rel="stylesheet" href="./css/style.css?v=carplay-home-v1">
 <title>BikeOS JARVIS | TVS Ronin</title>
 </head>
 <body>
@@ -17,49 +17,7 @@
  <button class="gear-btn" data-tab="settings" aria-label="Settings">⚙</button>
 </header>
 
-<main id="view-dashboard" class="view active">
- <section class="cockpit">
-  <aside class="bike-card panel">
-   <div class="bike-visual"><div class="bike-silhouette">🏍</div></div>
-   <h2>TVS RONIN</h2><p class="muted">Nimbus Grey SE</p>
-   <div class="connected"><i></i><span id="bikeConnection">PHONE GPS READY</span></div>
-   <div class="device-row"><span>▣　Phone</span><b id="phoneBattery">--%</b></div>
-   <div class="device-row"><span>◉　Helmet</span><b id="helmetState">NOT LINKED</b></div>
-   <div class="device-row"><span>▣　GoPro</span><b id="goproState">NOT LINKED</b></div>
-   <p class="device-note">Accessory status is user-configured. BikeOS does not scan or pair devices by itself.</p>
-  </aside>
-
-  <section class="gauge-wrap">
-   <div class="gauge">
-    
-    <div class="gauge-inner"><div class="rpm-label">LIVE GPS SPEED</div><div class="speed" id="speed">0</div><div class="unit">km/h</div>
-
-    </div>
-   </div>
-   <div class="mode-switch"><span>RIDE MODE</span><div class="mode-buttons"><button id="urbanMode" class="mode active">URBAN</button><button id="rainMode" class="mode">RAIN</button></div></div>
-   <div class="telemetry-note" id="telemetryNote">GPS SPEED • ENGINE DATA NOT CONNECTED</div>
-  </section>
-
-  <aside class="right-stack">
-   <section class="nav-card panel">
-    <div class="turn-row"><span class="turn-icon" id="homeTurnIcon">➜</span><div><b id="homeNavDistance">Navigation ready</b><small id="homeNavInstruction">Search a destination below</small></div></div>
-    <div class="map-preview home-map-preview"><div id="homeBikeMap" aria-label="Live route preview"></div><span class="home-map-overlay">LIVE ROUTE</span></div>
-    <div class="nav-foot"><span id="homeEta">ETA --</span><span id="homeNavRemaining">GPS WAITING</span><button id="openNavigation">OPEN NAVIGATION ↗</button></div>
-   </section>
-   <section class="music-card panel">
-    <div class="album-art">♫</div><div class="track"><b id="trackTitle">Music controls</b><small id="trackArtist">Open your preferred music app</small></div><span class="spotify">●</span>
-    <div class="music-controls"><button id="prevTrack">|◀</button><button id="playMusic" class="play">▶</button><button id="nextTrack">▶|</button></div>
-   </section>
-  </aside>
- </section>
-
- <section class="metrics">
-  <article class="metric panel"><div class="metric-icon">●</div><div><small>TRIP DISTANCE</small><b><span id="tripValue">0.0</span><em> km</em></b></div></article>
-  <article class="metric panel"><div class="metric-icon">⌁</div><div><small>AVG SPEED</small><b id="avgSpeedValue">0</b><em> km/h</em></div></article>
-  <article class="metric panel"><div class="metric-icon">↗</div><div><small>MAX SPEED</small><b id="maxSpeedValue">0</b><em> km/h</em></div></article>
-  <article class="metric panel"><div class="metric-icon">◷</div><div><small>RIDE TIME</small><b id="rideTimeValue">00:00</b></div></article>
- </section>
-</main>
+<main id="view-dashboard" class="view active carplay-home"><section class="carplay-layout"><aside class="launcher-panel"><div class="launcher-heading"><span class="launcher-dot"></span><div><b>Good ride.</b><small>Choose an app</small></div></div><div class="app-launcher"><button class="launch-tile nav-tile" data-tab="navigation"><span>➤</span><b>Navigation</b><small>Maps & directions</small></button><button class="launch-tile music-tile" data-tab="music"><span>♫</span><b>Music</b><small>Your audio apps</small></button><button class="launch-tile calls-tile" data-tab="calls"><span>☎</span><b>Phone</b><small>Calls & contacts</small></button><button class="launch-tile message-tile" data-tab="messages"><span>▤</span><b>Messages</b><small>Messages & SOS</small></button><button class="launch-tile stats-tile" data-tab="stats"><span>▥</span><b>Ride stats</b><small>Trip information</small></button><button class="launch-tile settings-tile" data-tab="settings"><span>⚙</span><b>Settings</b><small>BikeOS preferences</small></button></div><div class="home-speed"><small>LIVE GPS SPEED</small><div><strong id="speed">0</strong><span>km/h</span></div><div class="home-ride-meta"><span id="tripValue">0.0</span> km trip <i></i> <span id="avgSpeedValue">0</span> avg</div></div></aside><section class="home-map-panel"><div class="home-map-head"><div><small>LIVE NAVIGATION</small><b id="homeNavDistance">Navigation ready</b><span id="homeNavInstruction">Search for a destination to begin</span></div><button id="openNavigation">FULL MAP ↗</button></div><div class="home-search"><input id="homeDestination" autocomplete="off" placeholder="Where to? Search a destination"><button id="homeDestinationGo" class="red-button">GO</button></div><div id="homePlaceResults" class="place-results" hidden></div><div class="home-map-canvas"><div id="homeBikeMap" aria-label="Live navigation map"></div><div class="map-attribution">© OpenStreetMap contributors</div></div><div class="home-map-footer"><span id="homeEta">ETA --</span><span id="homeNavRemaining">GPS WAITING</span><span id="homeConnection">GPS & PHONE STATUS</span></div></section></section><section class="home-bottom-widgets"><article class="home-widget"><small>MAX SPEED</small><b id="maxSpeedValue">0 <em>km/h</em></b></article><article class="home-widget"><small>RIDE TIME</small><b id="rideTimeValue">00:00</b></article><article class="home-widget"><small>PHONE CONNECTION</small><b id="homePhoneLink">Bluetooth / Wi-Fi</b></article><article class="home-widget"><small>RIDE PROFILE</small><div class="mode-buttons"><button id="urbanMode" class="mode active">URBAN</button><button id="rainMode" class="mode">RAIN</button></div></article></section></main>
 
 <section id="view-navigation" class="view nav-screen">
  <div class="nav-toolbar">
@@ -100,5 +58,5 @@
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
 </div>
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=bikeos-nav-v2"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="./js/app.js?v=carplay-home-v1"></script>
 </body></html>
