@@ -117,3 +117,8 @@ button,.mode{background:#151a20;color:#f4f5f7;border-color:#454d57}
  .nav-layout{height:calc(100vh - 125px);grid-template-columns:minmax(0,1fr) 300px}.map-stage{min-height:260px}.guidance-panel{padding:10px}.guidance-next{padding-bottom:8px}.guidance-next .turn-icon{font-size:30px}.guidance-next b{font-size:14px}.guidance-summary{padding:8px 0}.guidance-summary b{font-size:16px}.guidance-actions button{padding:8px;font-size:9px}.steps-heading{margin:9px 0 5px}.route-steps li{padding:6px;font-size:12px}
 }
 @media(max-width:760px) and (orientation:portrait){.nav-layout{height:auto;grid-template-columns:1fr}.map-stage{height:48vh;min-height:280px}.guidance-panel{max-height:45vh}.nav-screen.active{overflow:auto}.place-results{top:65px}}
+
+/* Home dashboard live navigation map */
+.home-map-preview{height:125px;background:#111a17;position:relative}
+#homeBikeMap{position:absolute;inset:0}
+.home-map-overlay{position:absolute;right:8px;top:7px;z-index:2;padding:3px 7px;border-radius:5px;background:#080b0dcc;color:#ff6570;font:700 9px Orbitron;letter-spacing:1px;pointer-events:none}
