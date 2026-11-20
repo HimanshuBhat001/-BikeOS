@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothProfile
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -20,6 +21,8 @@ import androidx.webkit.WebViewClientCompat
 import org.json.JSONObject
 
 class MainActivity : Activity() {
+    companion object { @Volatile var instance: MainActivity? = null }
+    fun webViewForMedia(): WebView? = if (::webView.isInitialized) webView else null
     private lateinit var webView: WebView
     private var adapter: BluetoothAdapter? = null
     private val profileStates = mutableMapOf<Int, Boolean>()
@@ -38,6 +41,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        instance = this
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
         val manager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
@@ -134,6 +138,9 @@ class MainActivity : Activity() {
 
     inner class NativeBridge {
         @JavascriptInterface fun openYouTubeMusic() { runOnUiThread { try { val launch = packageManager.getLaunchIntentForPackage("com.google.android.apps.youtube.music"); if (launch != null) startActivity(launch) else startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://music.youtube.com"))) } catch (_: Exception) { try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://music.youtube.com"))) } catch (_: Exception) {} } } }
+        @JavascriptInterface fun requestMediaAccess() { runOnUiThread { try { startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) } catch (_: Exception) {} } }
+        @JavascriptInterface fun mediaCommand(command: String) { YouTubeMediaListener.perform(command) }
+        @JavascriptInterface fun refreshMedia() { YouTubeMediaListener.refresh(this@MainActivity) }
         @JavascriptInterface fun refreshBluetooth() { runOnUiThread { requestBluetoothPermissionIfNeeded(); refreshBluetoothProfiles() } }
     }
 
@@ -152,6 +159,7 @@ class MainActivity : Activity() {
     override fun onDestroy() {
         try { unregisterReceiver(receiver) } catch (_: Exception) {}
         if (::webView.isInitialized) webView.destroy()
+        if (instance === this) instance = null
         super.onDestroy()
     }
 }
