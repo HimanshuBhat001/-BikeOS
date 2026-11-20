@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -132,6 +133,7 @@ class MainActivity : Activity() {
     }
 
     inner class NativeBridge {
+        @JavascriptInterface fun openYouTubeMusic() { runOnUiThread { try { val launch = packageManager.getLaunchIntentForPackage("com.google.android.apps.youtube.music"); if (launch != null) startActivity(launch) else startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://music.youtube.com"))) } catch (_: Exception) { try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://music.youtube.com"))) } catch (_: Exception) {} } } }
         @JavascriptInterface fun refreshBluetooth() { runOnUiThread { requestBluetoothPermissionIfNeeded(); refreshBluetoothProfiles() } }
     }
 
