@@ -43,7 +43,7 @@ bind('openNavigation',()=>{tab('navigation');safe('destination',e=>e.focus())});
 /* In-app navigation: MapLibre + OSM tiles + Nominatim geocoding + OSRM routing */
 const nav={map:null,homeMap:null,ready:false,homeReady:false,destination:null,route:null,steps:[],active:false,watch:null,userMarker:null,destMarker:null,routeLayer:false,lastStep:-1};
 function mapStyleUrl(){const key=store.get('maptilerKey','').trim();const style=store.get('mapStyle','streets-v2-dark');return key?'https://api.maptiler.com/maps/'+encodeURIComponent(style)+'/style.json?key='+encodeURIComponent(key):null}
-function createPremiumMap(container,zoom){const style=mapStyleUrl();if(!style){toast('Add your MapTiler API key in Settings to enable premium vector maps');tab('settings');return null}return new maplibregl.Map({container,style,center:[73.8567,18.5204],zoom,attributionControl:true,renderWorldCopies:false,fadeDuration:150, maxPitch:65});}
+function createPremiumMap(container,zoom){const style=mapStyleUrl();if(!style){toast('Add your MapTiler API key in Settings to enable premium vector maps');return null}return new maplibregl.Map({container,style,center:[73.8567,18.5204],zoom,attributionControl:true,renderWorldCopies:false,fadeDuration:150, maxPitch:65});}
 function navToast(message){toast(message)}
 function initHomeMap(){
  if(nav.homeMap||!window.maplibregl||!$('homeBikeMap'))return;
