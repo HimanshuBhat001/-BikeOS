@@ -155,7 +155,13 @@ class MainActivity : Activity() {
     }
 
     override fun onResume() { super.onResume(); if (::webView.isInitialized) refreshBluetoothProfiles() }
-    override fun onBackPressed() { if (::webView.isInitialized && webView.canGoBack()) webView.goBack() else super.onBackPressed() }
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if (!::webView.isInitialized) { super.onBackPressed(); return }
+        webView.evaluateJavascript("(function(){return window.BikeOSHandleBack ? window.BikeOSHandleBack() : false})()") { handled ->
+            if (handled != "true") finish()
+        }
+    }
     override fun onDestroy() {
         try { unregisterReceiver(receiver) } catch (_: Exception) {}
         if (::webView.isInitialized) webView.destroy()
