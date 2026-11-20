@@ -68,3 +68,52 @@ button,.mode{background:#151a20;color:#f4f5f7;border-color:#454d57}
 .gauge{background:conic-gradient(from 225deg,#e31b2f 0deg 0deg,#343941 0deg 270deg,transparent 270deg 360deg)!important}
 .gauge:before{display:none!important;content:none!important}
 .gauge:after{inset:15px!important;border:1px solid #343941!important;box-shadow:none!important;background:transparent!important}
+
+
+/* BikeOS navigation and responsive cockpit v1 */
+.nav-screen{display:none;min-height:0;max-width:none;margin:0;padding:10px 0 0;background:transparent;border:0;box-shadow:none}
+.nav-screen.active{display:flex;flex-direction:column;gap:10px}
+.nav-toolbar{display:flex;gap:10px;align-items:center}
+.nav-search{display:flex;gap:8px;flex:1;max-width:760px}
+.nav-search input{flex:1;min-width:0;background:#0b0d10;border:1px solid #41464f;border-radius:12px;padding:13px 16px;color:#fff;font:600 17px Rajdhani}
+.nav-search button{margin:0}
+.map-tool,.map-locate button{width:48px;height:48px;border:1px solid #41464f;border-radius:12px;background:#11151a;color:#fff;font-size:26px}
+.nav-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;min-height:0;height:calc(100vh - 205px)}
+.map-stage{position:relative;min-height:360px;border:1px solid #343b43;border-radius:18px;overflow:hidden;background:#17211e}
+#bikeMap{position:absolute;inset:0}
+.map-attribution{position:absolute;bottom:4px;left:8px;background:#090b0dcc;color:#ddd;font:11px Arial;padding:3px 6px;border-radius:4px;z-index:2}
+.map-locate{position:absolute;right:12px;bottom:28px;z-index:3}
+.map-locate button{background:#101419eF}
+.guidance-panel{background:linear-gradient(145deg,#111419,#07090c);border:1px solid #3b4149;border-radius:18px;padding:16px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.guidance-next{display:flex;gap:12px;align-items:center;padding-bottom:14px;border-bottom:1px solid #30363d}
+.guidance-next .turn-icon{font-size:40px;min-width:42px}
+.guidance-next small,.guidance-summary small{display:block;color:#9ba3ad;font:600 10px Orbitron;letter-spacing:1px}
+.guidance-next b{display:block;font:700 17px Rajdhani;color:#fff}
+.guidance-next strong{display:block;color:#ff5260;font:700 14px Orbitron;margin-top:4px}
+.guidance-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:13px 0}
+.guidance-summary b{display:block;font:700 20px Orbitron;margin-top:5px}
+.guidance-actions{display:flex;gap:8px}
+.guidance-actions button{margin:0;padding:11px 13px;font-size:11px}
+#stopNavigation{border:1px solid #555;border-radius:9px;background:#1a1e23;color:#fff}
+.steps-heading{font:700 11px Orbitron;letter-spacing:1px;color:#aeb5be;margin:16px 0 8px}
+.route-steps{list-style:none;margin:0;padding:0;overflow:auto}
+.route-steps li{display:flex;justify-content:space-between;gap:10px;padding:10px 8px;border-bottom:1px solid #252a30;color:#d9dde2;font-size:14px}
+.route-steps li b{font-weight:600}
+.route-steps li small{white-space:nowrap;color:#9ba3ad}
+.route-steps li.current{background:#3b0b12;border-left:3px solid #f21d32}
+.place-results{position:absolute;z-index:10;top:72px;left:10px;width:min(740px,calc(100% - 80px));background:#101419;border:1px solid #444;border-radius:12px;box-shadow:0 10px 30px #000b;overflow:hidden}
+.place-results button{display:block;width:100%;text-align:left;padding:12px 15px;border:0;border-bottom:1px solid #333;background:transparent;color:#eee;font:600 14px Rajdhani}
+.place-results button:active{background:#381018}
+.user-map-marker{width:18px;height:18px;border:3px solid white;border-radius:50%;background:#1677ff;box-shadow:0 0 0 7px #1677ff44}
+.maplibregl-ctrl-group{background:#11151a!important}
+.maplibregl-ctrl button span{filter:invert(1)}
+@media(orientation:landscape) and (max-height:650px){
+ .app{padding:4px 12px 6px}.topbar{height:46px;min-height:46px;gap:12px}.brand{min-width:150px}.brand-icon{width:34px;height:34px;line-height:30px;font-size:22px}.brand-name{font-size:19px}.brand-sub{font-size:8px}.bike-title{min-width:150px;padding:0 10px}.bike-title b{font-size:12px}.bike-title small{font-size:11px}.status-icon{width:28px;height:28px;font-size:16px}.clock{min-width:100px}.clock b{font-size:17px}.clock span{font-size:10px}
+ .cockpit{height:calc(100vh - 145px);min-height:0;grid-template-columns:minmax(150px,.8fr) minmax(210px,1.1fr) minmax(220px,1fr);gap:10px;padding:5px 0}
+ .bike-card{height:100%;padding:8px 12px}.bike-visual{height:55px}.bike-silhouette{font-size:48px}.bike-card h2{font-size:13px}.muted{font-size:12px;margin-bottom:4px}.connected{font-size:9px;padding:4px 9px;margin-bottom:4px}.device-row{font-size:12px;padding:3px}.device-row b{font-size:11px}.device-note{font-size:8px;margin-top:3px}
+ .gauge{width:min(40vh,260px);height:min(40vh,260px)}.speed{font-size:clamp(48px,7vh,72px);letter-spacing:-4px}.rpm-label{font-size:9px;margin:0}.unit{font-size:13px;margin-top:3px}.mode-switch{margin-top:6px}.mode-switch>span{font-size:9px}.mode{padding:5px 14px;font-size:9px}.telemetry-note{font-size:7px;margin-top:4px}
+ .right-stack{gap:8px}.nav-card{height:55%;min-height:0;padding:8px 10px}.turn-icon{font-size:25px}.turn-row{gap:8px}.turn-row b{font-size:13px}.turn-row small{font-size:11px}.map-preview{height:65px;margin-top:4px}.nav-foot{font-size:9px;margin-top:4px}.nav-foot button{font-size:9px;padding:2px}.music-card{height:43%;min-height:0;padding:7px;grid-template-columns:40px 1fr 12px;grid-template-rows:32px 1fr}.album-art{width:34px;height:34px;font-size:20px}.track b{font-size:12px}.track small{font-size:10px}.music-controls{gap:15px}.music-controls button{font-size:15px}.music-controls .play{width:28px;height:28px}
+ .metrics{gap:6px;margin:0 0 5px}.metric{height:52px;padding:5px 8px;gap:6px}.metric-icon{width:28px;height:28px;font-size:16px}.metric small{font-size:7px}.metric b{font-size:14px}.metric em{font-size:9px}.bottom-nav{min-height:48px;padding:3px 6px;border-radius:14px 14px 5px 5px}.nav-item{gap:1px;padding:3px}.nav-item span{font-size:17px}.nav-item b{font-size:9px}
+ .nav-layout{height:calc(100vh - 125px);grid-template-columns:minmax(0,1fr) 300px}.map-stage{min-height:260px}.guidance-panel{padding:10px}.guidance-next{padding-bottom:8px}.guidance-next .turn-icon{font-size:30px}.guidance-next b{font-size:14px}.guidance-summary{padding:8px 0}.guidance-summary b{font-size:16px}.guidance-actions button{padding:8px;font-size:9px}.steps-heading{margin:9px 0 5px}.route-steps li{padding:6px;font-size:12px}
+}
+@media(max-width:760px) and (orientation:portrait){.nav-layout{height:auto;grid-template-columns:1fr}.map-stage{height:48vh;min-height:280px}.guidance-panel{max-height:45vh}.nav-screen.active{overflow:auto}.place-results{top:65px}}
